@@ -1,26 +1,53 @@
+import "./Register.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
+
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [destination, setDestination] = useState("");
+const [budget, setBudget] = useState("");
+const [travelStyle, setTravelStyle] = useState("");
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+const handleRegister = async (e) => {
+  e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          destination,
+          budget,
+          travelStyle,
+        }),
+      }
+    );
+
+    const data = await res.json();
 
     if (res.ok) {
+      alert("Registration Successful!");
       navigate("/login");
+    } else {
+      alert(data.message);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server Connection Error");
+  }
+};
 
   return (
     <div className="auth-container">
@@ -52,6 +79,36 @@ function Register() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <input
+  type="text"
+  placeholder="Destination"
+  value={destination}
+  onChange={(e) => setDestination(e.target.value)}
+/>
+<div className="select-container">
+  <select
+  id="budget"
+  value={budget}
+  onChange={(e) => setBudget(e.target.value)}
+>
+  <option value="">Select Budget</option>
+  <option value="Low">Low</option>
+  <option value="Medium">Medium</option>
+  <option value="High">High</option>
+</select>
+
+<select
+id="travelStyle"
+  value={travelStyle}
+  onChange={(e) => setTravelStyle(e.target.value)}
+>
+  <option value="">Travel Style</option>
+  <option value="Adventure">Adventure</option>
+  <option value="Backpacking">Backpacking</option>
+  <option value="Luxury">Luxury</option>
+  <option value="Family">Family</option>
+</select>
+</div>
 
           <button type="submit" className="primary-btn">
             Register

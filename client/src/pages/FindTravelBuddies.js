@@ -1,5 +1,5 @@
 import "./FindTravelBuddies.css";
-
+import { Link } from "react-router-dom";
 function FindTravelBuddies() {
   return (
     <div className="finder-bg">
@@ -11,10 +11,11 @@ function FindTravelBuddies() {
       </div>
 
       <div className="features-grid">
+       <Link to="/matching" className="feature-card">
         <div className="feature-card">
           <h3>🌍 Destination Matching</h3>
           <p>Connect with travelers going to the same destination as you.</p>
-        </div>
+        </div></Link>
 
         <div className="feature-card">
           <h3>🧭 Travel Preferences</h3>

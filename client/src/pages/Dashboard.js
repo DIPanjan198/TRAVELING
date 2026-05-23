@@ -23,7 +23,7 @@ function Dashboard() {
         <p className="subtitle">You are logged in successfully</p>
 
         <div className="dashboard-actions">
-          {/* ✅ ONLY THIS LINE IS ADDED */}
+          
           <button
             className="dash-btn"
             onClick={() => navigate("/find-buddies")}
@@ -31,9 +31,13 @@ function Dashboard() {
             🌍 Find Travel Buddies
           </button>
 
-          <button className="dash-btn" onClick={comingSoon}>
-            🗺️ Explore Destinations
-          </button>
+          <button
+             className="dash-btn"
+            onClick={() => navigate("/explore")}
+          >
+           🗺️ Explore Destinations
+            </button>
+
 
           <button className="dash-btn disabled" onClick={comingSoon}>
             💬 Chat (Coming Soon)

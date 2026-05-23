@@ -1,3 +1,4 @@
+import ExploreDestinations from "./pages/ExploreDestinations";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -7,6 +8,10 @@ import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import FindTravelBuddies from "./pages/FindTravelBuddies";
+import DestinationMatching from "./pages/DestinationMatching";
+import Chat from "./pages/chat";
+import About from "./pages/About";
+import Features from "./pages/Features";
 function App() {
   return (
     <BrowserRouter>
@@ -15,12 +20,17 @@ function App() {
 
       <Routes>
         {/* Public routes */}
+        <Route path="/explore" element={<ExploreDestinations />} />
+
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/find-buddies" element={ <ProtectedRoute> <FindTravelBuddies /></ProtectedRoute>}/>
-
+         <Route path="/matching" element={<DestinationMatching />} />
+          <Route path="/chat/:id" element={<chat />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
         {/* Protected route (ADDED, NOT BREAKING ANYTHING) */}
         <Route
           path="/dashboard"

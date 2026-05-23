@@ -1,0 +1,44 @@
+.destination-container {
+  padding: 30px;
+}
+
+.destination-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.destination-container p {
+    color: #000;
+    font-style: italic;
+}
+
+.travelers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.traveler-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.traveler-card h3 {
+  color: #1e3a8a;
+}
+
+.connect-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.connect-btn:hover {
+  background: #1d4ed8;
+}

@@ -4,11 +4,12 @@ import "./Navbar.css";
 function Navbar() {
   return (
     <nav className="navbar">
-      <h2 className="logo">✈️ TravelBuddy</h2>
+      <h2 className="logo"> TravelBuddy</h2>
       <div className="links">
         <Link to="/">Home</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
+        <Link to="/about">About</Link>
+        <Link to="/features">Features</Link>
+        
       </div>
     </nav>
   );
