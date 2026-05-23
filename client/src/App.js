@@ -9,7 +9,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import FindTravelBuddies from "./pages/FindTravelBuddies";
 import DestinationMatching from "./pages/DestinationMatching";
-import Chat from "./pages/chat";
 import About from "./pages/About";
 import Features from "./pages/Features";
 function App() {
@@ -28,7 +27,6 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/find-buddies" element={ <ProtectedRoute> <FindTravelBuddies /></ProtectedRoute>}/>
          <Route path="/matching" element={<DestinationMatching />} />
-          <Route path="/chat/:id" element={<chat />} />
           <Route path="/about" element={<About />} />
           <Route path="/features" element={<Features />} />
         {/* Protected route (ADDED, NOT BREAKING ANYTHING) */}
