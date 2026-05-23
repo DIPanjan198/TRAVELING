@@ -18,7 +18,7 @@ const handleRegister = async (e) => {
 
   try {
     const res = await fetch(
-      "http://localhost:5000/api/register",
+      "https://traveling-1-41nr.onrender.com/api/register",
       {
         method: "POST",
         headers: {
