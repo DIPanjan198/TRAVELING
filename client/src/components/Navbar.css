@@ -2,39 +2,62 @@
   position: sticky;
   top: 0;
   z-index: 9999;
-  height: 60px;
+
+  height: 70px;
   padding: 0 30px;
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(8px);
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
+
+  background: rgba(0,0,0,.15);
+  backdrop-filter: blur(15px);
 }
 
 .logo {
-  font-size: 22px;
+  color: white;
+  font-size: 30px;
   font-weight: bold;
 }
 
-.links a {
-  margin-left: 20px;
+/* Hamburger ALWAYS visible */
+.hamburger {
+  display: block !important;
   color: white;
-  position: relative;
-  padding-bottom: 4px;
+  font-size: 40px;
+  cursor: pointer;
 }
 
-.links a::after {
-  content: "";
+/* Hide menu initially */
+.links {
+  display: none !important;
+}
+
+/* Show after click */
+.links.active {
+  display: flex !important;
+  flex-direction: column;
+
   position: absolute;
-  width: 0%;
-  height: 2px;
-  left: 0;
-  bottom: 0;
-  background: #00e0ff;
-  transition: 0.3s;
+  top: 70px;
+  right: 20px;
+
+  width: 250px;
+
+  padding: 20px;
+    background: rgba(255,255,255,.12);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,.2);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.25);
+
+ 
 }
 
-.links a:hover::after {
-  width: 100%;
+.links.active a {
+  color: rgb(17, 18, 16);
+  text-decoration: none;
+  padding: 12px;
 }

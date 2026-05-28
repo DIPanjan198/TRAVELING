@@ -113,106 +113,79 @@ app.post("/api/register", async (req, res) => {
     });
   }
 });
-
 /* ===================== GET ALL USERS ===================== */
+
 app.get("/api/users", async (req, res) => {
+
   try {
-    const users = await User.find().select("-password");
+
+    const users = await User
+      .find()
+      .select("-password");
 
     res.json(users);
-  } catch (err) {
-    console.error(err);
+
+  }
+
+  catch (err) {
 
     res.status(500).json({
-      message: err.message,
+      message: err.message
     });
+
   }
+
 });
 
-/* ===================== LOGIN ===================== */
-app.post("/api/login", async (req, res) => {
+
+/* ===================== MATCH USERS ===================== */
+
+app.post("/api/match-users", async (req, res) => {
+
   try {
-    const { email, password } = req.body;
 
-    if (!email || !password) {
+    const {
+      destination,
+      budget,
+      travelStyle
+    } = req.body;
+
+    if (
+      !destination ||
+      !budget ||
+      !travelStyle
+    ) {
       return res.status(400).json({
-        message: "Email and Password required",
+        message: "All fields required"
       });
     }
 
-    const user = await User.findOne({
-      email,
-    });
+    const users = await User.find({
 
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid password",
-      });
-    }
-
-    res.json({
-      message: "Login successful",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        destination: user.destination,
-        budget: user.budget,
-        travelStyle: user.travelStyle,
+      destination: {
+        $regex: new RegExp(destination, "i")
       },
-    });
-  } catch (err) {
-    console.error(err);
+
+      budget: budget,
+
+      travelStyle: travelStyle
+
+    }).select("-password");
+
+    res.json(users);
+
+  }
+
+  catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
-      message: "Login error",
+      message: err.message
     });
+
   }
-});
 
-/* ===================== FORGOT PASSWORD ===================== */
-app.post("/api/forgot-password", async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
-
-    const user = await User.findOne({
-      email,
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found",
-      });
-    }
-
-    user.password = await bcrypt.hash(
-      newPassword,
-      10
-    );
-
-    await user.save();
-
-    res.json({
-      message: "Password reset successful",
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      message: "Password reset error",
-    });
-  }
 });
 
 /* ===================== START SERVER ===================== */

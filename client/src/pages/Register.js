@@ -12,42 +12,65 @@ function Register() {
 const [budget, setBudget] = useState("");
 const [travelStyle, setTravelStyle] = useState("");
   const navigate = useNavigate();
-
 const handleRegister = async (e) => {
+
   e.preventDefault();
 
   try {
+
     const res = await fetch(
-      "https://traveling-1-41nr.onrender.com/api/register",
+      "https://traveling-1-41nr.onrender.com/api/match-users",
       {
         method: "POST",
+
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
+
           name,
           email,
           password,
           destination,
           budget,
-          travelStyle,
-        }),
+          travelStyle
+
+        })
+
       }
     );
 
     const data = await res.json();
 
+    console.log(data);
+
     if (res.ok) {
-      alert("Registration Successful!");
+
+      alert("Registration Successful");
+
       navigate("/login");
-    } else {
-      alert(data.message);
+
     }
-  } catch (err) {
-    console.error(err);
-    alert("Server Connection Error");
+
+    else {
+
+      alert(data.message);
+
+    }
+
   }
+
+  catch (err) {
+
+    console.log(err);
+
+    alert("Server Error");
+
+  }
+
 };
+
 
   return (
     <div className="auth-container">

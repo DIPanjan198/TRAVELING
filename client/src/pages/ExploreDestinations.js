@@ -1,6 +1,8 @@
 import "./ExploreDestinations.css";
+import React from "react";
 
 function ExploreDestinations() {
+ 
   const destinations = [
     {
       name: "Paris",
