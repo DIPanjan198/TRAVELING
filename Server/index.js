@@ -25,15 +25,44 @@ mongoose
   .catch((err) => console.log(err));
 
 const UserSchema = new mongoose.Schema({
-  name: String,
+
+  name: {
+    type: String,
+    required: true,
+  },
+
   email: {
     type: String,
+    required: true,
     unique: true,
   },
-  password: String,
-  destination: String,
-  budget: String,
-  travelStyle: String,
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  destination: {
+    type: String,
+    default: "",
+  },
+
+  budget: {
+    type: String,
+    default: "",
+  },
+
+  travelStyle: {
+    type: String,
+    default: "",
+  },
+
+  avatar: {
+    type: String,
+    default:
+      "https://i.pravatar.cc/300"
+  }
+
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -159,8 +188,6 @@ app.post("/api/match-users", async (req, res) => {
         $regex: destination,
         $options: "i",
       },
-      budget,
-      travelStyle,
     }).select("-password");
 
     res.json(users);

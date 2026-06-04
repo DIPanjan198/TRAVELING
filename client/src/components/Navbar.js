@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { lazy, useState } from "react";
+import {useState } from "react";
 import "./Navbar.css";
 
 function Navbar() {
