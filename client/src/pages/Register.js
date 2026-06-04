@@ -19,7 +19,7 @@ const handleRegister = async (e) => {
   try {
 
     const res = await fetch(
-      "https://traveling-1-41nr.onrender.com/api/match-users",
+      "https://traveling-2.onrender.com/api/match-users",
       {
         method: "POST",
 
