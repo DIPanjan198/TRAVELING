@@ -243,7 +243,9 @@ res.status(500).json({
 
 }
 });
-
+app.get("/test", (req, res) => {
+  res.send("Backend Updated Successfully");
+});
 /* ================= START SERVER ================= */
 
 const PORT = process.env.PORT || 5000;
