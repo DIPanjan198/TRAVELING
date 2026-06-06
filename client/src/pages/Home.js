@@ -70,98 +70,58 @@ function Home() {
   return (
 
     <div className="home-bg">
+        <section className="hero-section">
 
-      {/* HERO */}
+  <div className="hero-left">
 
-      <section
-        className="hero-section"
-        style={{
-          backgroundImage: `url(${Front})`
-        }}
+    <div className="hero-badge">
+      ✈ Travel Together
+    </div>
+
+    <h1 className="hero-title">
+      Find Your Perfect
+      <span> Travel Buddy</span>
+    </h1>
+
+    <p className="hero-subtitle">
+      Connect with like-minded travelers,
+      discover new destinations, share
+      expenses and create unforgettable
+      adventures around the world.
+    </p>
+
+    <div className="hero-buttons">
+
+      <button
+        className="primary-btn"
+        onClick={() => navigate("/register")}
       >
+        Get Started
+      </button>
 
-        <div className="hero-overlay"></div>
+      <button
+        className="secondary-btn"
+        onClick={() => navigate("/explore")}
+      >
+        Explore
+      </button>
 
-        <div className="hero-content">
+    </div>
 
-          <h1 className="hero-title">
+  </div>
 
-            Find Your Perfect
-            <span> Travel Buddy</span>
+  <div className="hero-right">
 
-          </h1>
+    <img
+      src={Front}
+      alt="Travel"
+      className="hero-image"
+    />
 
-          <p className="hero-subtitle">
+  </div>
 
-            TravelBuddy Finder is a smart
-            travel companion platform that
-            helps travelers connect with
-            like-minded people heading to
-            the same destination.
-
-          </p>
-
-          <div className="hero-buttons">
-
-            <button
-              className="primary-btn"
-              onClick={() => navigate("/register")}
-            >
-              Get Started
-            </button>
-
-            <button
-              className="secondary-btn"
-              onClick={() => navigate("/register/explore")}
-            >
-              Explore
-            </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* SEARCH SECTION */}
-
-      <section className="search-section">
-
-        <div className="search-box">
-          <input
-  type="text"
-  placeholder="Destination"
-  value={destination}
-  onChange={(e) => setDestination(e.target.value)}
-/>
-
-<select
-  value={budget}
-  onChange={(e) => setBudget(e.target.value)}
->
-  <option value="">Budget</option>
-  <option value="Low">Low</option>
-  <option value="Medium">Medium</option>
-  <option value="High">High</option>
-</select>
-
-<select
-  value={travelStyle}
-  onChange={(e) => setTravelStyle(e.target.value)}
->
-  <option value="">Travel Style</option>
-  <option value="Adventure">Adventure</option>
-  <option value="Luxury">Luxury</option>
-  <option value="Backpacking">Backpacking</option>
-</select>
-
-          <button onClick={handleFindBuddy}>
-            Find Buddy
-          </button>
-
-        </div>
-
-      </section>
+</section>
+     
 
       {/* STATS */}
 

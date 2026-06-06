@@ -146,10 +146,18 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      user,
-    });
+      res.json({
+  success: true,
+  user: {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    destination: user.destination,
+    budget: user.budget,
+    travelStyle: user.travelStyle,
+    avatar: user.avatar
+  }
+});
   } catch (err) {
     res.status(500).json({
       message: err.message,
@@ -174,29 +182,84 @@ app.get("/api/users", async (req, res) => {
 });
 
 /* MATCH USERS */
+/* MATCH USERS */
+/* RECOMMENDED TRAVELERS */
+
+app.get("/api/recommended/:id", async (req, res) => {
+  try {
+
+    const currentUser = await User.findById(
+      req.params.id
+    );
+
+    if (!currentUser) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const travelers = await User.find({
+
+      _id: {
+        $ne: currentUser._id
+      },
+
+      destination: {
+        $regex: new RegExp(
+          currentUser.destination,
+          "i"
+        )
+      },
+
+      budget: currentUser.budget,
+
+      travelStyle: currentUser.travelStyle
+
+    }).select("-password");
+
+    res.json(travelers);
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: err.message
+    });
+
+  }
+});
 
 app.post("/api/match-users", async (req, res) => {
   try {
+
     const {
       destination,
       budget,
-      travelStyle,
+      travelStyle
     } = req.body;
 
     const users = await User.find({
+
       destination: {
-        $regex: destination,
-        $options: "i",
+        $regex: new RegExp(destination, "i")
       },
+
+      budget: budget,
+
+      travelStyle: travelStyle
+
     }).select("-password");
 
     res.json(users);
+
   } catch (err) {
+
     res.status(500).json({
-      message: err.message,
+      message: err.message
     });
+
   }
 });
+
 
 const PORT = process.env.PORT || 5000;
 

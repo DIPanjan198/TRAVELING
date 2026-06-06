@@ -8,24 +8,54 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false); // ✅ ADDED
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+    const handleLogin = async (e) => {
+  e.preventDefault();
 
-    const res = await fetch("https://traveling-2.onrender.com/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  try {
+
+    const res = await fetch(
+      "https://traveling-2.onrender.com/api/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    console.log("LOGIN DATA:", data);
 
     if (!res.ok) {
-      alert("Invalid login credentials");
+      alert(data.message || "Invalid login credentials");
       return;
     }
 
-    await res.json(); // keep ESLint happy
-    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
+
+    localStorage.setItem(
+      "isLoggedIn",
+      "true"
+    );
+
     navigate("/dashboard");
-  };
+
+  } catch (err) {
+
+    console.log(err);
+
+    alert("Server Error");
+
+  }
+};
 
   return (
     <div className="auth-container">
