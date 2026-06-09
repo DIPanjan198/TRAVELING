@@ -2,8 +2,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://your-frontend-site.onrender.com"],
+    methods: ["GET", "POST"]
+  }
+});
 
 app.use(
   cors({
@@ -59,13 +69,28 @@ const UserSchema = new mongoose.Schema({
 
   avatar: {
     type: String,
-    default:
-      "https://i.pravatar.cc/300"
-  }
-
+    default: "",
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
+
+const MessageSchema = new mongoose.Schema({
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now }
+});
+
+const Message = mongoose.model("Message", MessageSchema);
+
+const ConnectionSchema = new mongoose.Schema({
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  status: { type: String, enum: ['pending', 'accepted'], default: 'pending' }
+}, { timestamps: true });
+
+const Connection = mongoose.model("Connection", ConnectionSchema);
 
 app.get("/", (req, res) => {
   res.send("Backend Running");
@@ -260,9 +285,145 @@ app.post("/api/match-users", async (req, res) => {
   }
 });
 
+/* UPDATE USER PROFILE */
+app.put("/api/users/:id", async (req, res) => {
+  try {
+    const { name, destination, budget, travelStyle, avatar } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { name, destination, budget, travelStyle, avatar },
+      { new: true }
+    ).select("-password");
+    res.json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* GET CHAT MESSAGES */
+app.get("/api/messages/:userId/:chatPartnerId", async (req, res) => {
+  try {
+    const { userId, chatPartnerId } = req.params;
+    const messages = await Message.find({
+      $or: [
+        { sender: userId, receiver: chatPartnerId },
+        { sender: chatPartnerId, receiver: userId }
+      ]
+    }).sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* CONNECTION ENDPOINTS */
+app.post("/api/connections/request", async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.body;
+    const existing = await Connection.findOne({
+      $or: [
+        { sender: senderId, receiver: receiverId },
+        { sender: receiverId, receiver: senderId }
+      ]
+    });
+    if (existing) {
+      return res.status(400).json({ message: "Connection already exists or is pending" });
+    }
+    const connection = await Connection.create({ sender: senderId, receiver: receiverId, status: "pending" });
+    res.status(201).json({ success: true, connection });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/api/connections/accept", async (req, res) => {
+  try {
+    const { connectionId } = req.body;
+    const connection = await Connection.findByIdAndUpdate(connectionId, { status: "accepted" }, { new: true });
+    res.json({ success: true, connection });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/api/connections/decline", async (req, res) => {
+  try {
+    const { connectionId } = req.body;
+    await Connection.findByIdAndDelete(connectionId);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/api/connections/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const connections = await Connection.find({
+      $or: [
+        { sender: userId },
+        { receiver: userId }
+      ]
+    }).populate("sender", "name avatar destination budget travelStyle")
+      .populate("receiver", "name avatar destination budget travelStyle");
+    res.json(connections);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* SOCKET.IO CHAT IMPLEMENTATION */
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("registerUser", (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} registered notification room: user_${userId}`);
+  });
+
+  socket.on("join", (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined chat room ${roomId}`);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    try {
+      const { senderId, receiverId, text, roomId } = data;
+      
+      const newMessage = new Message({
+        sender: senderId,
+        receiver: receiverId,
+        text: text
+      });
+      await newMessage.save();
+
+      // Broadcast to everyone in the room (including sender to confirm)
+      io.to(roomId).emit("receiveMessage", newMessage);
+
+      // Fetch sender details to send along with the notification
+      const sender = await User.findById(senderId).select("name avatar");
+      const senderName = sender ? sender.name : "Travel Buddy";
+      const senderAvatar = sender ? sender.avatar : "";
+
+      // Emit notification to receiver's personal room
+      io.to(`user_${receiverId}`).emit("newMessageNotification", {
+        senderId,
+        senderName,
+        senderAvatar,
+        text
+      });
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server Running ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server Running on PORT ${PORT}`);
 });

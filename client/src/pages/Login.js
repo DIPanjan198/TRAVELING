@@ -1,138 +1,109 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { API_BASE } from "../utils/api";
 import "./Auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // ✅ ADDED
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-  e.preventDefault();
-
-  try {
-
-    const res = await fetch(
-      "https://traveling-2.onrender.com/api/login",
-      {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Invalid credentials! Double check your email and password.");
+        return;
       }
-    );
-
-    const data = await res.json();
-
-    console.log("LOGIN DATA:", data);
-
-    if (!res.ok) {
-      alert(data.message || "Invalid login credentials");
-      return;
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("isLoggedIn", "true");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert("Server connection failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(data.user)
-    );
-
-    localStorage.setItem(
-      "isLoggedIn",
-      "true"
-    );
-
-    navigate("/dashboard");
-
-  } catch (err) {
-
-    console.log(err);
-
-    alert("Server Error");
-
-  }
-};
+  };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Welcome Back 👋</h2>
+    <div className="auth-wrapper">
+      <div className="bg-blob blob-primary" />
+      <div className="bg-blob blob-secondary" />
 
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <div className="auth-card glass-panel">
+        <div className="auth-brand">
+          <div className="auth-brand-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.9-.2-1.6.1-2 .5-.3.3-.4.8-.2 1.3l5 3.5-3.5 3.5-3-1-1.5 1.5 4 1 1 4 1.5-1.5-1-3 3.5-3.5 3.5 5c.5.2 1 .1 1.3-.2.4-.4.7-1.1.5-2z"/>
+            </svg>
+          </div>
+          <span>AeroTravel</span>
+        </div>
 
-          {/* PASSWORD WITH EYE ICON */}
-          <div className="password-wrapper">
+        <h2>Welcome Back</h2>
+        <p className="auth-subtitle">Log in to coordinate with your active travel partners.</p>
+
+        <form onSubmit={handleLogin} className="auth-form">
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
             <input
-              type={showPassword ? "text" : "password"} // ✅ TOGGLE
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="email"
+              className="form-input"
+              placeholder="e.g. wanderer@domain.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
-
-            <span
-              className={`eye-icon ${showPassword ? "open" : ""}`}
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {/* Professional SVG Eye */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                {showPassword ? (
-                  <>
-                    <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.74-1.78 1.92-3.39 3.44-4.73" />
-                    <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-.88" />
-                    <path d="M1 1l22 22" />
-                  </>
-                )}
-              </svg>
-            </span>
           </div>
 
-          <p
-            className="forgot-link"
-            onClick={() => navigate("/forgot-password")}
-          >
-            Forgot password?
-          </p>
+          <div className="form-group">
+            <div className="form-label-row">
+              <label className="form-label">Password</label>
+              <Link to="/forgot-password" style={{ color: "var(--primary-light)", fontSize: "0.8rem", textDecoration: "none" }}>
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
-          <button type="submit">Login</button>
+          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
+            {loading ? "Authenticating..." : "Sign In"}
+          </button>
         </form>
+
+        <div className="auth-footer-text">
+          New to AeroTravel? <Link to="/register">Create an account</Link>
+        </div>
       </div>
     </div>
   );
 }
 
 export default Login;
-
-
-
-
-
-
-
-

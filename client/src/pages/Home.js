@@ -1,305 +1,303 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
-import travelImg from "../assets/travel-buddies.jpg";
-import exploreImg from "../assets/explore.jpg";
-import secureImg from "../assets/secure.jpg";
-import MahadevImg from "../assets/Mahadev.jpg";
-import Front from "../assets/FrontPage.jpg";
-
+import { API_BASE } from "../utils/api";
 import "./Home.css";
 
+/* Animated counter hook */
+function useCounter(target, duration = 2000, triggered = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!triggered) return;
+    let startTime = null;
+    const step = (ts) => {
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, triggered]);
+  return count;
+}
+
+/* Stat Card */
+function StatCard({ value, suffix, label, triggered }) {
+  const count = useCounter(value, 2000, triggered);
+  return (
+    <div className="stat-card glass-panel">
+      <h2>{count.toLocaleString()}{suffix}</h2>
+      <p>{label}</p>
+    </div>
+  );
+}
+
+
 function Home() {
-
   const navigate = useNavigate();
-
-  /* ================= STATES ================= */
-
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelStyle, setTravelStyle] = useState("");
-
   const [matchedUsers, setMatchedUsers] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [statsVisible, setStatsVisible] = useState(false);
+  const statsRef = useRef(null);
 
-  /* ================= FIND BUDDY ================= */
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn") === "true") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (statsRef.current) obs.observe(statsRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   const handleFindBuddy = async () => {
-
-    if (
-      !destination ||
-      !budget ||
-      !travelStyle
-    ) {
-      alert("Please fill all fields");
+    if (!destination || !budget || !travelStyle) {
+      alert("Please choose a destination, budget, and travel style!");
       return;
     }
-
+    setSearching(true);
     try {
-
-      const res = await fetch(
-        "https://traveling-2.onrender.com/api/match-users",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            destination,
-            budget,
-            travelStyle
-          })
-        }
-      );
-
+      const res = await fetch(`${API_BASE}/api/match-users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination, budget, travelStyle }),
+      });
       const data = await res.json();
-
       setMatchedUsers(data);
-
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSearching(false);
     }
-
-    catch (err) {
-
-      console.log(err);
-
-    }
-
   };
 
+  const coreFeatures = [
+    {
+      icon: "🌍",
+      title: "Destination Matches",
+      desc: "Instantly coordinate with travelers heading to the exact locations you are interested in. Compare dates, sights, and bookings."
+    },
+    {
+      icon: "🎒",
+      title: "Preference Matching",
+      desc: "Match based on custom budgets and travel style tags like Adventure, Backpacking, Luxury, or Family style."
+    },
+    {
+      icon: "💰",
+      title: "Cost Splitting",
+      desc: "Connect with others to share expenses on accommodation, taxi rentals, local tour guides, and meals."
+    },
+    {
+      icon: "🤝",
+      title: "Verified Directory",
+      desc: "Review profiles with complete identity checks, social validations, and trust reviews for worry-free travel plans."
+    },
+    {
+      icon: "💬",
+      title: "Interactive Chat Rooms",
+      desc: "Discuss flight plans and detail daily checklists in live chat rooms before booking packages or flights."
+    },
+    {
+      icon: "🗺️",
+      title: "Curated Escapes Feed",
+      desc: "Browse our hand-picked selections of top trending cities, pristine beaches, and alpine mountain getaways."
+    }
+  ];
+
   return (
+    <div className="home-container">
+      {/* Background Blobs */}
+      <div className="bg-blob blob-primary" />
+      <div className="bg-blob blob-secondary" />
 
-    <div className="home-bg">
-        <section className="hero-section">
-
-  <div className="hero-left">
-
-    <div className="hero-badge">
-      ✈ Travel Together
-    </div>
-
-    <h1 className="hero-title">
-      Find Your Perfect
-      <span> Travel Buddy</span>
-    </h1>
-
-    <p className="hero-subtitle">
-      Connect with like-minded travelers,
-      discover new destinations, share
-      expenses and create unforgettable
-      adventures around the world.
-    </p>
-
-    <div className="hero-buttons">
-
-      <button
-        className="primary-btn"
-        onClick={() => navigate("/register")}
-      >
-        Get Started
-      </button>
-
-      <button
-        className="secondary-btn"
-        onClick={() => navigate("/explore")}
-      >
-        Explore
-      </button>
-
-    </div>
-
-  </div>
-
-  <div className="hero-right">
-
-    <img
-      src={Front}
-      alt="Travel"
-      className="hero-image"
-    />
-
-  </div>
-
-</section>
-     
-
-      {/* STATS */}
-
-      <section className="stats-section">
-
-        <div className="stat-card">
-          <h2>5K+</h2>
-          <p>Travelers</p>
+      {/* Hero Section */}
+      <header className="hero">
+        <div className="hero-content">
+          <span className="badge badge-indigo animate-pulse">🌍 Find Your Ultimate Travel Partner</span>
+          <h1>
+            Your Next Adventure<br />
+            Is Better <span className="gradient-text">Together</span>
+          </h1>
+          <p className="hero-desc">
+            Connect with verified global travelers matching your exact destination, budget, and adventure style. Split costs, share experiences, and stay safe.
+          </p>
+          <div className="hero-actions">
+            <button className="btn btn-primary" onClick={() => navigate("/register")}>
+              Create Free Account
+            </button>
+            <button className="btn btn-glass" onClick={() => navigate("/explore")}>
+              Explore Destinations
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div className="stat-card">
-          <h2>120+</h2>
-          <p>Destinations</p>
-        </div>
-
-        <div className="stat-card">
-          <h2>500+</h2>
-          <p>Trips</p>
-        </div>
-
-        <div className="stat-card">
-          <h2>4.8</h2>
-          <p>Ratings</p>
-        </div>
-
+      {/* Stats Section */}
+      <section className="stats-container" ref={statsRef}>
+        <StatCard value={12500} suffix="+" label="Verified Members" triggered={statsVisible} />
+        <StatCard value={145} suffix="+" label="Destinations Covered" triggered={statsVisible} />
+        <StatCard value={4800} suffix="+" label="Trips Completed" triggered={statsVisible} />
+        <StatCard value={99.4} suffix="%" label="Safety Score" triggered={statsVisible} />
       </section>
 
-      {/* FEATURES */}
+      {/* Matching Form Section */}
+      <section className="matcher-section">
+        <div className="matcher-card glass-panel">
+          <h2>Quick Match Wizard</h2>
+          <p className="matcher-subtitle">Input your preferences to search the real-time traveler database</p>
+          
+          <div className="matcher-inputs">
+            <div className="form-group">
+              <label className="form-label">📍 Destination</label>
+              <input 
+                type="text" 
+                className="form-input" 
+                placeholder="e.g. Goa, Bali, Paris"
+                value={destination} 
+                onChange={(e) => setDestination(e.target.value)} 
+              />
+            </div>
 
-      <section className="features-wrapper">
+            <div className="form-group">
+              <label className="form-label">💰 Budget Range</label>
+              <select className="form-input" value={budget} onChange={(e) => setBudget(e.target.value)}>
+                <option value="">Choose Budget</option>
+                <option value="Low">Low Budget (Backpacking)</option>
+                <option value="Medium">Medium Budget (Standard)</option>
+                <option value="High">High Budget (Premium)</option>
+              </select>
+            </div>
 
-        <h2 className="section-title">
-          Why Choose TravelBuddy?
-        </h2>
-
-        <div className="features-section">
-
-          <div className="feature-card">
-            <img
-              src={travelImg}
-              className="feature-image"
-              alt=""
-            />
-
-            <h3>🌍 Find Travel Buddies</h3>
-
-            <p>
-              Match with travelers going
-              to the same destination.
-            </p>
+            <div className="form-group">
+              <label className="form-label">🎒 Travel Vibe</label>
+              <select className="form-input" value={travelStyle} onChange={(e) => setTravelStyle(e.target.value)}>
+                <option value="">Choose Vibe</option>
+                <option value="Adventure">Adventure & Hiking</option>
+                <option value="Backpacking">Culture & Sightseeing</option>
+                <option value="Luxury">Relaxing & Beach</option>
+                <option value="Family">Food & Nightlife</option>
+              </select>
+            </div>
           </div>
 
-          <div className="feature-card">
-            <img
-              src={exploreImg}
-              className="feature-image"
-              alt=""
-            />
-
-            <h3>🗺 Explore Destinations</h3>
-
-            <p>
-              Discover amazing travel
-              locations around the world.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <img
-              src={secureImg}
-              className="feature-image"
-              alt=""
-            />
-
-            <h3>🔒 Safe & Secure</h3>
-
-            <p>
-              Verified users and trusted
-              travel experiences.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <img
-              src={MahadevImg}
-              className="feature-image"
-              alt=""
-            />
-
-            <h3>✨ Spiritual Journeys</h3>
-
-            <p>
-              Explore peaceful spiritual
-              destinations with companions.
-            </p>
-          </div>
-
-        </div>
-
-      </section>
-      {/* MATCHED USERS */}
-
-<section className="matched-users">
-
-  <h2 className="section-title">
-    Matched Travelers
-  </h2>
-
-  <div className="matched-grid">
-
-    {matchedUsers.length > 0 ? (
-
-      matchedUsers.map((user) => (
-
-        <div
-          className="matched-card"
-          key={user._id}
-        >
-
-          <h3>{user.name}</h3>
-
-          <p>
-            📍 {user.destination}
-          </p>
-
-          <p>
-            💰 {user.budget}
-          </p>
-
-          <p>
-            🎒 {user.travelStyle}
-          </p>
-
-          <button
-
-            className="connect-btn"
-
-            onClick={() => {
-
-              const loggedIn =
-                localStorage.getItem("isLoggedIn");
-
-              if (!loggedIn) {
-
-                navigate("/register");
-
-              }
-
-              else {
-
-                alert(
-                  `Connected with ${user.name}`
-                );
-
-              }
-
-            }}
-
-          >
-            Connect
+          <button className="btn btn-secondary" onClick={handleFindBuddy} disabled={searching}>
+            {searching ? "Searching database..." : "Find My Match ✨"}
           </button>
+        </div>
+      </section>
 
+      {/* Live Matches Grid */}
+      <section className="matches-results">
+        {matchedUsers.length > 0 ? (
+          <div className="results-wrapper">
+            <h3>Matched Buddies Found</h3>
+            <div className="results-grid">
+              {matchedUsers.map((user) => (
+                <div className="user-match-card glass-panel" key={user._id}>
+                  <div className="user-match-header">
+                    <div className="user-match-avatar">
+                      {user.avatar && user.avatar.startsWith("data:") ? (
+                        <img src={user.avatar} alt={user.name} />
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <h4>{user.name}</h4>
+                      <p>Prefers {user.travelStyle}</p>
+                    </div>
+                  </div>
+                  <div className="user-match-body">
+                    <p>📍 {user.destination}</p>
+                    <p>💰 {user.budget} Budget</p>
+                  </div>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => {
+                      const loggedIn = localStorage.getItem("isLoggedIn");
+                      if (!loggedIn) {
+                        navigate("/register");
+                      } else {
+                        navigate(`/chat/${user._id}`);
+                      }
+                    }}
+                  >
+                    Send Message
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          destination && !searching && (
+            <p className="no-results-msg">No current travelers found matching that exact filter combination. Try another search!</p>
+          )
+        )}
+      </section>
+
+      {/* Rebuilt Features Grid */}
+      <section className="features-grid-section">
+        <div className="features-header">
+          <span className="badge badge-emerald">Key Features</span>
+          <h2>Platform Capabilities</h2>
+          <p>Everything you need to find, connect, and travel with verified people safely.</p>
         </div>
 
-      ))
+        <div className="features-container">
+          {coreFeatures.map((f, i) => (
+            <div className="feature-card glass-panel" key={i}>
+              <div className="feature-icon-wrapper">
+                <span style={{ fontSize: "1.5rem" }}>{f.icon}</span>
+              </div>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-    ) : (
+      {/* Rebuilt About Section */}
+      <section className="about-section-integrated">
+        <div className="about-header">
+          <span className="badge badge-indigo">About AeroTravel</span>
+          <h2>Redefining Group Adventures</h2>
+        </div>
 
-      <p className="no-users">
-        No travelers found
-      </p>
+        <div className="about-grid-integrated">
+          <div className="about-col-left glass-panel">
+            <h3>Our Core Values</h3>
+            <div className="value-item">
+              <h4>🚀 Safety Protocols First</h4>
+              <p>Every profile undergoes strict validation check rules to verify identity before coordinating trips.</p>
+            </div>
+            <div className="value-item">
+              <h4>💰 Cost Democratization</h4>
+              <p>Splitting transport, rooms, and guides saves up to 50% on travel expenses.</p>
+            </div>
+          </div>
 
-    )}
-
-  </div>
-
-</section>
-
+          <div className="about-col-right glass-panel">
+            <h3>The Aero Concept</h3>
+            <p>
+              We believe adventure should never be halted by the lack of companions. AeroTravel creates a dynamic community where you can find buddies matching your exact financial targets, location plans, and vacation tempos.
+            </p>
+            <p>
+              Whether you are checking out remote mountain trails, surfing beaches, exploring historic cities, or taking relaxing retreats, we simplify coordination.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
