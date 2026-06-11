@@ -225,14 +225,7 @@ function Sidebar() {
             AeroTravel<span className="logo-dot">.</span>
           </span>
           {/* Close button — only shown inside open sidebar on mobile */}
-          <button
-            className="sidebar-close-btn"
-            onClick={() => setMobileOpen(false)}
-            onPointerDown={(e) => { e.preventDefault(); setMobileOpen(false); }}
-            aria-label="Close menu"
-          >
-            ✕
-          </button>
+          
         </div>
 
         {/* Navigation */}
