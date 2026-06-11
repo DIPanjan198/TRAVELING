@@ -142,10 +142,10 @@ function Home() {
 
       {/* Stats Section */}
       <section className="stats-container" ref={statsRef}>
-        <StatCard value={12500} suffix="+" label="Verified Members" triggered={statsVisible} />
-        <StatCard value={145} suffix="+" label="Destinations Covered" triggered={statsVisible} />
-        <StatCard value={4800} suffix="+" label="Trips Completed" triggered={statsVisible} />
-        <StatCard value={99.4} suffix="%" label="Safety Score" triggered={statsVisible} />
+        <StatCard value={500} suffix="+" label="Verified Members" triggered={statsVisible} />
+        <StatCard value={45} suffix="+" label="Destinations Covered" triggered={statsVisible} />
+        <StatCard value={48} suffix="+" label="Trips Completed" triggered={statsVisible} />
+        <StatCard value={100} suffix="%" label="Safety Score" triggered={statsVisible} />
       </section>
 
       {/* Matching Form Section */}
@@ -298,6 +298,38 @@ function Home() {
           </div>
         </div>
       </section>
+      {/* Meet Our Team Section */}
+      <section className="team-section">
+        <div className="team-header">
+          <span className="badge badge-emerald">The Creators</span>
+          <h2>Meet Our Team</h2>
+          <p>The visionaries behind AeroTravel</p>
+        </div>
+
+        <div className="team-grid">
+          {[
+            "Dipanjan Choudhuri",
+            "Shuvodip Hazra",
+            "Avijit Mandal",
+            "Rajat Kantal",
+            "Dibyendu Chowdhuri"
+          ].map((name, idx) => (
+            <div className="team-member-card glass-panel" key={idx}>
+              <div className="team-member-avatar">
+                <span className="team-initials">{name.split(" ").map(n => n[0]).join("")}</span>
+              </div>
+              <h3 className="team-member-name">{name}</h3>
+              <p className="team-member-role">Developer</p>
+              <div className="team-socials">
+                <div className="social-circle"></div>
+                <div className="social-circle"></div>
+                <div className="social-circle"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
     </div>
   );
 }

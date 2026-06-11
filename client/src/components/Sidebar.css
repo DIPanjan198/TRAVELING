@@ -70,11 +70,20 @@
   transition: var(--transition-smooth);
   margin-left: auto;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto;
 }
 
-.sidebar-close-btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
+.sidebar-close-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (hover: hover) {
+  .sidebar-close-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
 
 /* ── Nav links ── */

@@ -228,6 +228,7 @@ function Sidebar() {
           <button
             className="sidebar-close-btn"
             onClick={() => setMobileOpen(false)}
+            onPointerDown={(e) => { e.preventDefault(); setMobileOpen(false); }}
             aria-label="Close menu"
           >
             ✕
