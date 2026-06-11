@@ -51,7 +51,7 @@ function ExploreDestinations() {
     {
       name: "Reykjavik, Iceland",
       desc: "Explore geothermal geysers, majestic waterfalls, volcanic sands, and look up at the dancing Aurora Borealis.",
-      img: "https://images.unsplash.com/photo-1504829857797-ddff28127792?auto=format&fit=crop&w=600&q=80",
+      img: "https://images.unsplash.com/photo-1489593426629-5e4e00ce821c?auto=format&fit=crop&w=600&q=80",
       category: "Mountains",
       rating: "4.8",
       cost: "Standard"
