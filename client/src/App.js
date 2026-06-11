@@ -12,6 +12,16 @@ import FindTravelBuddies from "./pages/FindTravelBuddies";
 import DestinationMatching from "./pages/DestinationMatching";
 import Chat from "./pages/chat";
 import BudgetEstimator from "./pages/BudgetEstimator";
+import Features from "./pages/Features";
+import AiTripPlanner from "./pages/AiTripPlanner";
+import ExpenseSplitter from "./pages/ExpenseSplitter";
+import CurrencyConverter from "./pages/CurrencyConverter";
+import TravelJournal from "./pages/TravelJournal";
+import PackingList from "./pages/PackingList";
+import WeatherCheck from "./pages/WeatherCheck";
+import TripCost from "./pages/TripCost";
+import TravelQuiz from "./pages/TravelQuiz";
+import DestinationGuide from "./pages/DestinationGuide";
 import { io } from "socket.io-client";
 import { API_BASE } from "./utils/api";
 import "./App.css";
@@ -154,10 +164,15 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/explore" element={<ExploreDestinations />} />
+              <Route path="/features" element={<Features />} />
               <Route path="/budget-estimator" element={<BudgetEstimator />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/weather-check" element={<WeatherCheck />} />
+              <Route path="/trip-cost" element={<TripCost />} />
+              <Route path="/travel-quiz" element={<TravelQuiz />} />
+              <Route path="/destination-guide" element={<DestinationGuide />} />
               
               <Route 
                 path="/find-buddies" 
@@ -191,6 +206,51 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Chat />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/ai-trip-planner"
+                element={
+                  <ProtectedRoute>
+                    <AiTripPlanner />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/expense-splitter"
+                element={
+                  <ProtectedRoute>
+                    <ExpenseSplitter />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/currency-converter"
+                element={
+                  <ProtectedRoute>
+                    <CurrencyConverter />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/travel-journal"
+                element={
+                  <ProtectedRoute>
+                    <TravelJournal />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/packing-list"
+                element={
+                  <ProtectedRoute>
+                    <PackingList />
                   </ProtectedRoute>
                 }
               />

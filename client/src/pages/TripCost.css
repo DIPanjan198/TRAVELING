@@ -1,0 +1,37 @@
+/* TRIP COST ESTIMATOR */
+.tc-page { position: relative; min-height: 100vh; padding: 60px 0 100px; overflow: hidden; }
+.tc-container { max-width: 860px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 32px; }
+.tc-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.tc-header h1 { font-size: clamp(2rem,4vw,3rem); font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #34d399 0%, #10b981 40%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.tc-header p { color: var(--text-secondary); max-width: 480px; line-height: 1.7; }
+.tc-form { padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+.tc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.tc-styles { display: flex; gap: 10px; flex-wrap: wrap; }
+.tc-style-btn { padding: 9px 22px; border-radius: var(--radius-full); border: 1px solid var(--border-light); background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition-smooth); }
+.tc-style-btn:hover { border-color: rgba(52,211,153,0.4); color: var(--secondary-light); }
+.tc-style-btn.selected { background: rgba(52,211,153,0.1); border-color: var(--secondary); color: var(--secondary-light); }
+.tc-calc-btn { align-self: center; padding: 13px 52px; }
+.tc-result { display: flex; flex-direction: column; gap: 16px; }
+.tc-result-header { padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.tc-result-header h3 { font-size: 1.1rem; font-weight: 800; }
+.tc-result-header p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+.tc-total-box { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.tc-total-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.tc-total-val { font-size: 2rem; font-weight: 900; color: var(--secondary-light); }
+.tc-per-person { font-size: 0.8rem; color: var(--text-secondary); }
+.tc-breakdown { display: flex; flex-direction: column; gap: 10px; }
+.tc-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; }
+.tc-row-label { font-size: 0.88rem; font-weight: 600; min-width: 130px; }
+.tc-bar-wrap { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.tc-bar { height: 100%; background: linear-gradient(90deg, var(--secondary), #10b981); border-radius: 4px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
+.tc-row-val { font-size: 0.88rem; font-weight: 800; color: var(--secondary-light); min-width: 90px; text-align: right; }
+.tc-row-pct { font-size: 0.72rem; color: var(--text-muted); min-width: 32px; text-align: right; }
+.tc-tip { padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+.tc-tip h4 { font-size: 1rem; font-weight: 800; }
+.tc-tip p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+@media (max-width: 640px) {
+  .tc-container { padding: 0 16px; }
+  .tc-form { padding: 20px 16px; }
+  .tc-grid { grid-template-columns: 1fr; }
+  .tc-row-label { min-width: 90px; font-size: 0.78rem; }
+}

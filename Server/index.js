@@ -27,12 +27,18 @@ app.use(
 );
 app.use(express.json());
 
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbuddy";
+
 mongoose
-  .connect(
-    "mongodb+srv://dbUser:Dip123@cluster0.oac2x82.mongodb.net/travelbuddy?retryWrites=true&w=majority"
-  )
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 10000,
+  })
+  .then(() => console.log(`MongoDB Connected successfully to ${MONGO_URI}`))
+  .catch((err) => {
+    console.error("MongoDB Connection Error:");
+    console.error("If you are using MongoDB Atlas, ensure your IP is whitelisted and the user credentials are correct.");
+    console.error(err);
+  });
 
 const UserSchema = new mongoose.Schema({
 

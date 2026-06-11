@@ -1,5 +1,5 @@
 /* =============================================
-   AUTH — AeroTravel Authentication Views
+   AUTH — Premium Authentication Pages
    ============================================= */
 
 .auth-wrapper {
@@ -8,56 +8,79 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 24px 60px;
+  padding: 80px 24px 60px;
   overflow: hidden;
 }
 
+/* Animated entrance for card */
 .auth-card {
   width: 100%;
   max-width: 480px;
-  padding: 40px;
+  padding: 44px 40px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: cardEntrance 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes cardEntrance {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
 
 .register-card {
-  max-width: 680px;
+  max-width: 700px;
 }
 
+/* Brand logo with pulse animation */
 .auth-brand {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 800;
   font-size: 1.2rem;
   color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
 .auth-brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.5);
+  animation: logoPulse 3s ease-in-out infinite;
 }
 
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(99,102,241,0.5); }
+  50%       { box-shadow: 0 4px 28px rgba(99,102,241,0.8); }
+}
+
+/* Divider line under heading */
 .auth-card h2 {
   font-size: 2rem;
   font-weight: 800;
   text-align: center;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-primary) 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .auth-subtitle {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.6;
   margin-top: -12px;
 }
 
@@ -71,6 +94,17 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+}
+
+/* Glowing input focus */
+.form-input {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.form-input:focus {
+  background: rgba(99, 102, 241, 0.05);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.2), 0 0 20px rgba(99,102,241,0.1);
 }
 
 /* Password eye wrap */
@@ -95,6 +129,11 @@
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.password-toggle-btn:hover {
+  color: #c4b5fd;
 }
 
 .form-label-row {
@@ -103,10 +142,33 @@
   align-items: center;
 }
 
+/* Submit button with glow animation */
 .auth-submit-btn {
   margin-top: 12px;
   padding: 14px;
   font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-submit-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.auth-submit-btn:hover::after {
+  opacity: 1;
+  animation: shimmerBtn 0.8s ease forwards;
+}
+
+@keyframes shimmerBtn {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
 }
 
 .auth-footer-text {
@@ -119,44 +181,78 @@
   color: var(--primary-light);
   text-decoration: none;
   font-weight: 600;
+  transition: var(--transition-smooth);
 }
 
 .auth-footer-text a:hover {
+  color: #c4b5fd;
   text-decoration: underline;
 }
 
-/* Alert Styling */
+/* Alerts */
 .auth-alert {
   padding: 14px 20px;
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   border: 1px solid transparent;
+  animation: fadeUp 0.4s ease both;
 }
 
 .auth-alert.success {
   background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.25);
   color: var(--secondary-light);
 }
 
 .auth-alert.error {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
   color: #f87171;
 }
 
-/* Dropdown fixes for select options in dark theme */
+/* Dropdown dark theme fix */
 select.form-input option {
   background: #0f172a;
   color: var(--text-primary);
 }
 
+/* Decorative glow spots behind card */
+.auth-wrapper::before,
+.auth-wrapper::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.auth-wrapper::before {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+  top: -100px;
+  left: -100px;
+}
+
+.auth-wrapper::after {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);
+  bottom: -80px;
+  right: -80px;
+}
+
+/* Responsive */
 @media (max-width: 640px) {
   .form-grid {
     grid-template-columns: 1fr;
   }
   .auth-card {
     padding: 32px 20px;
+  }
+  .auth-card h2 {
+    font-size: 1.7rem;
   }
 }

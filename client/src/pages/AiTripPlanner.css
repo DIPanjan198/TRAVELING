@@ -1,0 +1,285 @@
+/* =============================================
+   AI TRIP PLANNER PAGE
+   ============================================= */
+
+.atp-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 60px 0 100px;
+  overflow: hidden;
+}
+
+.atp-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Header */
+.atp-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.atp-header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #c4b5fd 0%, #818cf8 50%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.atp-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+/* Destination chips */
+.atp-section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.atp-dest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.atp-dest-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition-spring);
+  text-align: center;
+}
+
+.atp-dest-chip:hover {
+  border-color: rgba(99,102,241,0.4) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(99,102,241,0.15);
+}
+
+.atp-dest-chip.selected {
+  border-color: var(--primary) !important;
+  background: rgba(99,102,241,0.12) !important;
+  box-shadow: 0 0 20px rgba(99,102,241,0.2);
+}
+
+.dest-emoji { font-size: 1.8rem; }
+
+.dest-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dest-tag {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Form */
+.atp-form {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.atp-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.atp-range {
+  width: 100%;
+  accent-color: var(--primary);
+  height: 4px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.atp-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.atp-generate-btn {
+  align-self: center;
+  padding: 14px 52px;
+  font-size: 1rem;
+  min-width: 220px;
+}
+
+/* Spinner */
+.atp-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Checklist */
+.atp-checklist-wrap {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeUp 0.5s ease both;
+}
+
+.atp-checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.atp-checklist-header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.atp-checklist-header p {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* SVG Progress Ring */
+.atp-progress-ring {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.atp-progress-ring svg {
+  width: 64px;
+  height: 64px;
+}
+
+.atp-progress-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--primary-light);
+}
+
+/* Checklist items */
+.atp-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.atp-check-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  animation: fadeUp 0.4s ease both;
+}
+
+.atp-check-item:hover {
+  background: rgba(99,102,241,0.06);
+  border-color: rgba(99,102,241,0.25);
+}
+
+.atp-check-item.done {
+  opacity: 0.55;
+  background: rgba(16,185,129,0.05);
+  border-color: rgba(16,185,129,0.2);
+}
+
+.atp-check-item.done .atp-check-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.atp-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--secondary-light);
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.atp-check-item.done .atp-checkbox {
+  background: rgba(16,185,129,0.15);
+  border-color: var(--secondary);
+}
+
+.atp-check-text {
+  font-size: 0.93rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.atp-tip {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .atp-container { padding: 0 20px; }
+  .atp-form { padding: 24px 20px; }
+  .atp-form-grid { grid-template-columns: 1fr; }
+  .atp-checklist-wrap { padding: 24px 20px; }
+  .atp-dest-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .atp-dest-grid { grid-template-columns: repeat(2, 1fr); }
+}

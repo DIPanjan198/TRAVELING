@@ -1,0 +1,53 @@
+/* TRAVEL JOURNAL */
+.tj-page { position: relative; min-height: 100vh; padding: 60px 0 100px; overflow: hidden; }
+.tj-container { max-width: 1000px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 32px; }
+
+.tj-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.tj-header h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #c4b5fd 0%, #a855f7 50%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.tj-header p { color: var(--text-secondary); max-width: 480px; line-height: 1.7; }
+
+.tj-toolbar { display: flex; gap: 14px; align-items: center; }
+.tj-search { flex: 1; }
+
+.tj-form { padding: 32px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp 0.4s ease both; }
+.tj-form h3 { font-size: 1.1rem; font-weight: 800; }
+.tj-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.tj-moods { display: flex; flex-wrap: wrap; gap: 8px; }
+.tj-mood-chip { padding: 7px 16px; border-radius: var(--radius-full); border: 1px solid var(--border-light); background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 0.84rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition-smooth); }
+.tj-mood-chip:hover { border-color: rgba(168,85,247,0.4); color: #c4b5fd; }
+.tj-mood-chip.selected { background: rgba(168,85,247,0.12); border-color: var(--accent-purple); color: #c4b5fd; }
+.tj-textarea { resize: vertical; min-height: 140px; font-family: inherit; line-height: 1.7; }
+
+.tj-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 40px; text-align: center; }
+.tj-empty span { font-size: 3rem; }
+.tj-empty h3 { font-size: 1.1rem; font-weight: 700; }
+.tj-empty p { color: var(--text-secondary); font-size: 0.9rem; }
+
+.tj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.tj-card { padding: 24px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: var(--transition-spring); }
+.tj-card:hover { transform: translateY(-5px); border-color: rgba(168,85,247,0.3); box-shadow: 0 16px 40px rgba(168,85,247,0.12); }
+.tj-card-top { display: flex; justify-content: space-between; align-items: center; }
+.tj-card-mood { font-size: 1.4rem; }
+.tj-delete-btn { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); color: #f87171; border-radius: var(--radius-sm); width: 28px; height: 28px; cursor: pointer; font-size: 0.7rem; transition: var(--transition-smooth); }
+.tj-delete-btn:hover { background: rgba(239,68,68,0.2); }
+.tj-card-title { font-size: 1rem; font-weight: 800; }
+.tj-card-loc { font-size: 0.8rem; color: var(--primary-light); font-weight: 600; }
+.tj-card-date { font-size: 0.76rem; color: var(--text-muted); }
+.tj-card-preview { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Modal */
+.tj-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeUp 0.3s ease; }
+.tj-modal { max-width: 620px; width: 100%; padding: 40px; position: relative; display: flex; flex-direction: column; gap: 16px; max-height: 80vh; overflow-y: auto; }
+.tj-modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-secondary); border-radius: var(--radius-sm); width: 32px; height: 32px; cursor: pointer; font-size: 0.9rem; }
+.tj-modal-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tj-modal-date { font-size: 0.8rem; color: var(--text-muted); }
+.tj-modal-loc { font-size: 0.82rem; color: var(--primary-light); font-weight: 600; }
+.tj-modal h2 { font-size: 1.6rem; font-weight: 900; }
+.tj-modal-body { color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem; white-space: pre-wrap; }
+.tj-modal-created { font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .tj-container { padding: 0 16px; }
+  .tj-form-grid { grid-template-columns: 1fr; }
+  .tj-form { padding: 20px 16px; }
+}
