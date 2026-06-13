@@ -18,15 +18,17 @@ const DestinationMatching = () => {
   };
 
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchUsers = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/users`);
+
         if (!res.ok) throw new Error("Could not load users list");
         const data = await res.json();
         setUsers(data);
       } catch (err) {
         console.error(err);
-        setError("Could not retrieve traveler directory. Showing offline demo data.");
+        setError("Could not retrieve traveler directory. Utilizing local offline list.");
+        // Fallback local list in case backend is sleeping/offline
         setUsers([
           { _id: "1", name: "Rahul", destination: "Goa", travelStyle: "Adventure", budget: "Medium", avatar: "" },
           { _id: "2", name: "Priya", destination: "Manali", travelStyle: "Luxury", budget: "High", avatar: "" },
@@ -34,84 +36,32 @@ const DestinationMatching = () => {
           { _id: "4", name: "Sara", destination: "Goa", travelStyle: "Adventure", budget: "Medium", avatar: "" },
           { _id: "5", name: "Deepak", destination: "Paris", travelStyle: "Backpacking", budget: "Medium", avatar: "" }
         ]);
+      } finally {
+        setLoading(false);
       }
-
-      // Fetch connections separately
-      if (currentUser?._id) {
-        try {
-          const cRes = await fetch(`${API_BASE}/api/connections/${currentUser._id}`);
-          const cData = await cRes.json();
-          if (Array.isArray(cData)) setConnections(cData);
-        } catch (e) {
-          console.error("Could not load connections:", e);
-        }
-      }
-
-      setLoading(false);
     };
-    fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchUsers();
   }, []);
 
-  // --- Compute matches: MUST have matching destination ---
-  const matches = users
-    .filter(u => u.email !== currentUser.email && u._id !== currentUser._id)
-    .map(traveler => {
-      const destMatch =
-        traveler.destination &&
-        currentUser.destination &&
-        traveler.destination.toLowerCase().trim() === currentUser.destination.toLowerCase().trim();
-
-      // Destination is mandatory — skip users who don't match
-      if (!destMatch) return null;
-
-      let score = 50; // base for destination match
-      const breakdown = [{ label: "📍 Destination", matched: true }];
-
-      if (
-        traveler.budget &&
-        currentUser.budget &&
-        traveler.budget.toLowerCase() === currentUser.budget.toLowerCase()
-      ) {
-        score += 25;
-        breakdown.push({ label: "💰 Budget", matched: true });
-      } else {
-        breakdown.push({ label: "💰 Budget", matched: false });
+  const fetchConnections = async () => {
+    if (!currentUser?._id) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/connections/${currentUser._id}`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setConnections(data);
       }
-
-      if (
-        traveler.travelStyle &&
-        currentUser.travelStyle &&
-        traveler.travelStyle.toLowerCase() === currentUser.travelStyle.toLowerCase()
-      ) {
-        score += 25;
-        breakdown.push({ label: "🎒 Travel Style", matched: true });
-      } else {
-        breakdown.push({ label: "🎒 Travel Style", matched: false });
-      }
-
-      return { ...traveler, score, breakdown };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.score - a.score);
-
-  // --- Connection helpers ---
-  const getConnectionState = (travelerId) => {
-    if (!currentUser?._id) return { status: "none" };
-    const conn = connections.find(c =>
-      (c.sender._id === currentUser._id && c.receiver._id === travelerId) ||
-      (c.sender._id === travelerId && c.receiver._id === currentUser._id)
-    );
-    if (!conn) return { status: "none" };
-    return {
-      status: conn.status,
-      isSender: conn.sender._id === currentUser._id,
-      connectionId: conn._id
-    };
+    } catch (err) {
+      console.error("Failed to load connections:", err);
+    }
   };
 
-  const handleConnect = async (receiverId) => {
-    if (!currentUser?._id) { navigate("/login"); return; }
+  useEffect(() => {
+    fetchConnections();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?._id]);
+
+  const handleConnectRequest = async (receiverId) => {
     try {
       const res = await fetch(`${API_BASE}/api/connections/request`, {
         method: "POST",
@@ -119,16 +69,14 @@ const DestinationMatching = () => {
         body: JSON.stringify({ senderId: currentUser._id, receiverId })
       });
       if (res.ok) {
-        const cRes = await fetch(`${API_BASE}/api/connections/${currentUser._id}`);
-        const cData = await cRes.json();
-        if (Array.isArray(cData)) setConnections(cData);
+        fetchConnections();
       }
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleAccept = async (connectionId) => {
+  const handleAcceptConnection = async (connectionId) => {
     try {
       const res = await fetch(`${API_BASE}/api/connections/accept`, {
         method: "POST",
@@ -136,16 +84,14 @@ const DestinationMatching = () => {
         body: JSON.stringify({ connectionId })
       });
       if (res.ok) {
-        const cRes = await fetch(`${API_BASE}/api/connections/${currentUser._id}`);
-        const cData = await cRes.json();
-        if (Array.isArray(cData)) setConnections(cData);
+        fetchConnections();
       }
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleDecline = async (connectionId) => {
+  const handleDeclineConnection = async (connectionId) => {
     try {
       const res = await fetch(`${API_BASE}/api/connections/decline`, {
         method: "POST",
@@ -153,22 +99,76 @@ const DestinationMatching = () => {
         body: JSON.stringify({ connectionId })
       });
       if (res.ok) {
-        const cRes = await fetch(`${API_BASE}/api/connections/${currentUser._id}`);
-        const cData = await cRes.json();
-        if (Array.isArray(cData)) setConnections(cData);
+        fetchConnections();
       }
     } catch (err) {
       console.error(err);
     }
   };
 
-  const renderActionButton = (traveler) => {
+  const getConnectionState = (travelerId) => {
+    if (!currentUser?._id || !connections) return { status: "none" };
+
+    const conn = connections.find(c => {
+      const sId = c.sender?._id || c.sender;
+      const rId = c.receiver?._id || c.receiver;
+      return (sId === currentUser._id && rId === travelerId) ||
+             (sId === travelerId && rId === currentUser._id);
+    });
+
+    if (!conn) return { status: "none" };
+
+    const sId = conn.sender?._id || conn.sender;
+    return {
+      status: conn.status,
+      isSender: sId === currentUser._id,
+      connectionId: conn._id
+    };
+  };
+
+  // Compute matches based on currentUser preferences
+  const matches = users
+    .filter(u => u.email !== currentUser.email && u._id !== currentUser._id)
+    // ONLY show if destination matches
+    .filter(traveler => {
+      if (!traveler.destination || !currentUser.destination) return false;
+      return traveler.destination.toLowerCase().trim() === currentUser.destination.toLowerCase().trim();
+    })
+    .map(traveler => {
+      let score = 50; // Base 50% for destination match
+      let breakdown = ["Destination Match"];
+
+      // Budget check
+      if (
+        traveler.budget &&
+        currentUser.budget &&
+        traveler.budget.toLowerCase() === currentUser.budget.toLowerCase()
+      ) {
+        score += 25;
+        breakdown.push("Budget Alignment");
+      }
+
+      // Travel style check
+      if (
+        traveler.travelStyle &&
+        currentUser.travelStyle &&
+        traveler.travelStyle.toLowerCase() === currentUser.travelStyle.toLowerCase()
+      ) {
+        score += 25;
+        breakdown.push("Vibe Match");
+      }
+
+      return { ...traveler, score, breakdown };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  const renderConnectButton = (traveler) => {
     const connState = getConnectionState(traveler._id);
 
-    if (connState.status === "accepted") {
+    if (connState.status === "none") {
       return (
-        <button className="btn btn-secondary match-connect-btn" onClick={() => navigate(`/chat/${traveler._id}`)}>
-          💬 Chat &amp; Plan
+        <button className="btn btn-primary match-connect-btn" onClick={() => handleConnectRequest(traveler._id)}>
+          Connect
         </button>
       );
     }
@@ -176,18 +176,18 @@ const DestinationMatching = () => {
     if (connState.status === "pending") {
       if (connState.isSender) {
         return (
-          <button className="btn btn-glass match-connect-btn" disabled style={{ opacity: 0.65, cursor: "not-allowed" }}>
-            ⏳ Request Sent
+          <button className="btn btn-glass match-connect-btn" style={{ opacity: 0.7, cursor: "not-allowed" }} disabled>
+            Sent Pending
           </button>
         );
       } else {
         return (
-          <div className="match-accept-decline-row">
-            <button className="btn btn-emerald" onClick={() => handleAccept(connState.connectionId)}>
-              ✓ Accept
+          <div style={{ display: "flex", gap: "8px", width: "100%" }}>
+            <button className="btn btn-emerald match-connect-btn" onClick={() => handleAcceptConnection(connState.connectionId)} style={{ flex: 1, padding: "8px" }}>
+              Accept
             </button>
-            <button className="btn btn-red" onClick={() => handleDecline(connState.connectionId)}>
-              ✕ Decline
+            <button className="btn btn-red match-connect-btn" onClick={() => handleDeclineConnection(connState.connectionId)} style={{ flex: 1, padding: "8px" }}>
+              Decline
             </button>
           </div>
         );
@@ -195,16 +195,10 @@ const DestinationMatching = () => {
     }
 
     return (
-      <button className="btn btn-primary match-connect-btn" onClick={() => handleConnect(traveler._id)}>
-        🤝 Connect
+      <button className="btn btn-primary match-connect-btn" onClick={() => navigate(`/chat/${traveler._id}`)}>
+        Chat & Plan
       </button>
     );
-  };
-
-  const scoreColor = (score) => {
-    if (score === 100) return "score-perfect";
-    if (score >= 75) return "score-high";
-    return "score-base";
   };
 
   return (
@@ -215,80 +209,47 @@ const DestinationMatching = () => {
       <header className="matching-header">
         <span className="badge badge-indigo">Dynamic AI Matching</span>
         <h1>Perfect Match Finder</h1>
-        <p>
-          Only showing travelers heading to <strong>{currentUser.destination || "your destination"}</strong>.
-          Match percentage increases when budget &amp; travel style also align.
-        </p>
+        <p>AeroTravel matches you dynamically based on destination targets, budget sizes, and travel styles.</p>
       </header>
 
-      {/* Your Targets Profile */}
+      {/* Preferences Profile Panel */}
       <div className="preference-profile glass-panel">
         <h3>Your Current Targets</h3>
         <div className="preference-tags">
-          <span className="pref-tag">📍 Destination: <strong>{currentUser.destination || "Not Set"}</strong></span>
-          <span className="pref-tag">💰 Budget: <strong>{currentUser.budget || "Not Set"}</strong></span>
-          <span className="pref-tag">🎒 Vibe: <strong>{currentUser.travelStyle || "Not Set"}</strong></span>
+          <span className="pref-tag">📍 Destination: <strong>{currentUser.destination || "Not Selected"}</strong></span>
+          <span className="pref-tag">💰 Budget: <strong>{currentUser.budget || "Not Selected"}</strong></span>
+          <span className="pref-tag">🎒 Vibe: <strong>{currentUser.travelStyle || "Not Selected"}</strong></span>
         </div>
-        <p className="pref-note">
-          Need to update?{" "}
-          <span onClick={() => navigate("/dashboard")} className="link-span">
-            Go to Dashboard Preferences
-          </span>
-        </p>
+        <p className="pref-note">Need to update this? Go to your <span onClick={() => navigate("/dashboard")} className="link-span">Dashboard Preferences</span>.</p>
       </div>
 
       {loading ? (
         <div className="matching-loader">
-          <div className="spinner" />
+          <div className="spinner"></div>
           <p>Analyzing matching database...</p>
         </div>
       ) : error ? (
-        <div className="match-error-banner">{error}</div>
+        <div className="auth-alert error" style={{ width: "100%", textAlign: "center" }}>{error}</div>
       ) : null}
 
       {!loading && (
         <div className="matches-section">
-          <div className="matches-section-title">
-            <h2>
-              {matches.length > 0
-                ? `${matches.length} Traveler${matches.length > 1 ? "s" : ""} Heading to ${currentUser.destination}`
-                : "No Matches Found"}
-            </h2>
-            {matches.length > 0 && (
-              <p className="matches-hint">
-                Sorted by compatibility score — connect first to unlock chat.
-              </p>
-            )}
-          </div>
-
+          <h2>Active Matches ({matches.length})</h2>
           {matches.length > 0 ? (
             <div className="matches-grid">
               {matches.map((traveler, idx) => (
                 <div className="match-user-card glass-panel" key={traveler._id || idx}>
-
-                  {/* Score Badge */}
-                  <div className={`match-score-badge ${scoreColor(traveler.score)}`}>
-                    <div className="score-ring">
-                      <svg viewBox="0 0 36 36" className="score-svg">
-                        <path
-                          className="score-track"
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <path
-                          className="score-fill"
-                          strokeDasharray={`${traveler.score}, 100`}
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                      </svg>
-                      <span className="score-number">{traveler.score}%</span>
-                    </div>
-                    <p className="score-label">Match</p>
+                  <div className="match-score-radial">
+                    <span>{traveler.score}%</span>
+                    <p>Match</p>
                   </div>
 
-                  {/* Avatar */}
                   <div className="match-card-avatar">
                     {traveler.avatar && traveler.avatar.startsWith("data:") ? (
-                      <img src={traveler.avatar} alt={traveler.name} />
+                      <img 
+                        src={traveler.avatar} 
+                        alt={traveler.name} 
+                      />
                     ) : (
                       <div className="match-avatar-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -301,41 +262,27 @@ const DestinationMatching = () => {
 
                   <h3>{traveler.name}</h3>
 
-                  {/* Meta info */}
                   <div className="match-card-meta">
-                    <span>📍 {traveler.destination}</span>
+                    <span>📍 {traveler.destination || "Anywhere"}</span>
                     <span>💰 {traveler.budget || "Medium"} Budget</span>
                     <span>🎒 {traveler.travelStyle || "Backpacker"}</span>
                   </div>
 
-                  {/* Match breakdown bars */}
-                  <div className="match-breakdown-bars">
+                  <div className="match-breakdown">
                     {traveler.breakdown.map((item, id) => (
-                      <div key={id} className={`breakdown-bar-item ${item.matched ? "matched" : "unmatched"}`}>
-                        <span className="breakdown-label">{item.label}</span>
-                        <span className="breakdown-status">
-                          {item.matched ? "✓" : "✕"}
-                        </span>
-                      </div>
+                      <span key={id} className="badge badge-emerald">{item}</span>
                     ))}
                   </div>
 
-                  {/* Action button */}
-                  {renderActionButton(traveler)}
+                  {renderConnectButton(traveler)}
                 </div>
               ))}
             </div>
           ) : (
             <div className="no-matches-panel glass-panel">
-              <div className="no-match-icon">🔍</div>
-              <h3>No Travelers Found for {currentUser.destination || "your destination"}</h3>
-              <p>
-                No other members have set <strong>{currentUser.destination}</strong> as their destination yet.
-                Try changing your destination on the Dashboard or invite friends to join!
-              </p>
-              <button className="btn btn-glass" onClick={() => navigate("/dashboard")}>
-                Update Preferences
-              </button>
+              <h3>No Matches with Same Destination</h3>
+              <p>We couldn't find other members targets for your destination combination. Adjust your destination preference under preferences tab in the Dashboard!</p>
+              <button className="btn btn-glass" onClick={() => navigate("/dashboard")}>Update Dashboard Profiles</button>
             </div>
           )}
         </div>

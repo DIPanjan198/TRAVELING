@@ -152,12 +152,61 @@ function SocketProvider({ children }) {
 }
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Set default sidebar state on load
+  useEffect(() => {
+    if (window.innerWidth <= 900) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
+  // Initialize theme and cyber-grid state globally
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("aero-theme") || "default";
+    if (savedTheme === "default") {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+
+    const savedGrid = localStorage.getItem("aero-grid-enabled");
+    const gridEnabled = savedGrid !== null ? savedGrid === "true" : true;
+    document.documentElement.style.setProperty("--grid-opacity", gridEnabled ? "1" : "0");
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      document.documentElement.style.setProperty("--scroll-y", `${scrollY}px`);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <BrowserRouter>
       <SocketProvider>
-        <div className="app-layout">
-          {/* Sidebar locked on the left */}
-          <Sidebar />
+        <div className={`app-layout ${sidebarOpen ? "sidebar-visible" : "sidebar-hidden"}`}>
+          {/* Persistent top header with logo to toggle navigation menu */}
+          <header className="app-header glass-panel">
+            <button 
+              className="logo-toggle-btn" 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              title={sidebarOpen ? "Hide Menu" : "Show Menu"}
+            >
+              <div className="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.9-.2-1.6.1-2 .5-.3.3-.4.8-.2 1.3l5 3.5-3.5 3.5-3-1-1.5 1.5 4 1 1 4 1.5-1.5-1-3 3.5-3.5 3.5 5c.5.2 1 .1 1.3-.2.4-.4.7-1.1.5-2z"/>
+                </svg>
+              </div>
+              <span className="logo-text">AeroTravel<span className="logo-dot">.</span></span>
+            </button>
+          </header>
+
+          {/* Sidebar */}
+          <Sidebar isOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
           {/* Content loaded on the right */}
           <main className="main-content">

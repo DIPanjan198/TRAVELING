@@ -33,6 +33,7 @@ function StatCard({ value, suffix, label, triggered }) {
 }
 
 
+
 function Home() {
   const navigate = useNavigate();
   const [destination, setDestination] = useState("");
@@ -43,11 +44,39 @@ function Home() {
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef(null);
 
+  // Scroll Progress and States
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Premium Theme and Customizer States
+  const [theme, setTheme] = useState(() => localStorage.getItem("aero-theme") || "default");
+  const [gridEnabled, setGridEnabled] = useState(() => {
+    const saved = localStorage.getItem("aero-grid-enabled");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [themeConsoleOpen, setThemeConsoleOpen] = useState(false);
+
   useEffect(() => {
     if (localStorage.getItem("isLoggedIn") === "true") {
       navigate("/dashboard");
     }
   }, [navigate]);
+
+  // Apply theme to document element
+  useEffect(() => {
+    if (theme === "default") {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+    localStorage.setItem("aero-theme", theme);
+  }, [theme]);
+
+  // Apply grid toggle to document element
+  useEffect(() => {
+    document.documentElement.style.setProperty("--grid-opacity", gridEnabled ? "1" : "0");
+    localStorage.setItem("aero-grid-enabled", String(gridEnabled));
+  }, [gridEnabled]);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -57,6 +86,45 @@ function Home() {
     if (statsRef.current) obs.observe(statsRef.current);
     return () => obs.disconnect();
   }, []);
+
+  // Set Scroll Listener for progress indicator and parallax
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+
+      setScrollProgress(progress);
+      setShowScrollTop(scrollY > 300);
+
+      // Set CSS variables for ultra-smooth rendering without React rendering overhead
+      document.documentElement.style.setProperty("--scroll-y", `${scrollY}px`);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Setup intersection observer for scroll reveal animations
+  useEffect(() => {
+    const revealElements = document.querySelectorAll(".scroll-reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
 
   const handleFindBuddy = async () => {
     if (!destination || !budget || !travelStyle) {
@@ -114,12 +182,15 @@ function Home() {
 
   return (
     <div className="home-container">
-      {/* Background Blobs */}
-      <div className="bg-blob blob-primary" />
-      <div className="bg-blob blob-secondary" />
+      {/* Scroll Progress Bar at the top of the screen */}
+      <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
+
+
+
+
 
       {/* Hero Section */}
-      <header className="hero">
+      <header className="hero scroll-reveal">
         <div className="hero-content">
           <span className="badge badge-indigo animate-pulse">🌍 Find Your Ultimate Travel Partner</span>
           <h1>
@@ -141,7 +212,7 @@ function Home() {
       </header>
 
       {/* Stats Section */}
-      <section className="stats-container" ref={statsRef}>
+      <section className="stats-container scroll-reveal" ref={statsRef}>
         <StatCard value={500} suffix="+" label="Verified Members" triggered={statsVisible} />
         <StatCard value={45} suffix="+" label="Destinations Covered" triggered={statsVisible} />
         <StatCard value={48} suffix="+" label="Trips Completed" triggered={statsVisible} />
@@ -149,20 +220,20 @@ function Home() {
       </section>
 
       {/* Matching Form Section */}
-      <section className="matcher-section">
+      <section className="matcher-section scroll-reveal">
         <div className="matcher-card glass-panel">
           <h2>Quick Match Wizard</h2>
           <p className="matcher-subtitle">Input your preferences to search the real-time traveler database</p>
-          
+
           <div className="matcher-inputs">
             <div className="form-group">
               <label className="form-label">📍 Destination</label>
-              <input 
-                type="text" 
-                className="form-input" 
+              <input
+                type="text"
+                className="form-input"
                 placeholder="e.g. Goa, Bali, Paris"
-                value={destination} 
-                onChange={(e) => setDestination(e.target.value)} 
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
               />
             </div>
 
@@ -195,7 +266,7 @@ function Home() {
       </section>
 
       {/* Live Matches Grid */}
-      <section className="matches-results">
+      <section className="matches-results scroll-reveal">
         {matchedUsers.length > 0 ? (
           <div className="results-wrapper">
             <h3>Matched Buddies Found</h3>
@@ -222,7 +293,7 @@ function Home() {
                     <p>📍 {user.destination}</p>
                     <p>💰 {user.budget} Budget</p>
                   </div>
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={() => {
                       const loggedIn = localStorage.getItem("isLoggedIn");
@@ -247,7 +318,7 @@ function Home() {
       </section>
 
       {/* Rebuilt Features Grid */}
-      <section className="features-grid-section">
+      <section className="features-grid-section scroll-reveal">
         <div className="features-header">
           <span className="badge badge-emerald">Key Features</span>
           <h2>Platform Capabilities</h2>
@@ -268,7 +339,7 @@ function Home() {
       </section>
 
       {/* Rebuilt About Section */}
-      <section className="about-section-integrated">
+      <section className="about-section-integrated scroll-reveal">
         <div className="about-header">
           <span className="badge badge-indigo">About AeroTravel</span>
           <h2>Redefining Group Adventures</h2>
@@ -298,8 +369,9 @@ function Home() {
           </div>
         </div>
       </section>
+
       {/* Meet Our Team Section */}
-      <section className="team-section">
+      <section className="team-section scroll-reveal">
         <div className="team-header">
           <span className="badge badge-emerald">The Creators</span>
           <h2>Meet Our Team</h2>
@@ -312,7 +384,7 @@ function Home() {
             "Shuvodip Hazra",
             "Avijit Mandal",
             "Rajat Kantal",
-            "Dibyendu Chowdhuri"
+            "Dibyendu Chowdhury"
           ].map((name, idx) => (
             <div className="team-member-card glass-panel" key={idx}>
               <div className="team-member-avatar">
@@ -329,6 +401,121 @@ function Home() {
           ))}
         </div>
       </section>
+
+
+
+      {/* Floating Scroll-to-Top Gauge */}
+      {showScrollTop && (
+        <button
+          className="scroll-to-top-btn"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Scroll to top"
+        >
+          <svg className="scroll-progress-ring" width="48" height="48">
+            <circle
+              className="scroll-progress-ring-bg"
+              stroke="rgba(255, 255, 255, 0.1)"
+              strokeWidth="3"
+              fill="transparent"
+              r="20"
+              cx="24"
+              cy="24"
+            />
+            <circle
+              className="scroll-progress-ring-fill"
+              stroke="var(--primary)"
+              strokeWidth="3"
+              strokeDasharray={`${2 * Math.PI * 20}`}
+              strokeDashoffset={`${2 * Math.PI * 20 - (scrollProgress / 100) * (2 * Math.PI * 20)}`}
+              strokeLinecap="round"
+              fill="transparent"
+              r="20"
+              cx="24"
+              cy="24"
+            />
+          </svg>
+          <span className="scroll-arrow">↑</span>
+        </button>
+      )}
+
+      {/* Floating Theme Customizer Console */}
+      <div className={`theme-console-wrapper ${themeConsoleOpen ? "open" : ""}`}>
+        <button 
+          className="theme-console-trigger-btn"
+          onClick={() => setThemeConsoleOpen(!themeConsoleOpen)}
+          title="Customize Aesthetics"
+          aria-label="Customize aesthetics"
+        >
+          <span className="trigger-icon">🎛️</span>
+          <span className="trigger-text">Aesthetics</span>
+        </button>
+
+        <div className="theme-console-panel glass-panel">
+          <div className="console-header">
+            <h4>AeroTravel Console</h4>
+            <button className="console-close-btn" onClick={() => setThemeConsoleOpen(false)}>&times;</button>
+          </div>
+          
+          <div className="console-body">
+            <div className="console-section">
+              <span className="console-section-title">Color Theme</span>
+              <div className="theme-options-grid">
+                <button 
+                  className={`theme-opt-btn ${theme === "default" ? "active" : ""}`}
+                  onClick={() => setTheme("default")}
+                >
+                  <div className="theme-opt-preview default-preview">
+                    <span className="dot-p"></span><span className="dot-s"></span>
+                  </div>
+                  <span>Cyberpunk</span>
+                </button>
+                <button 
+                  className={`theme-opt-btn ${theme === "volcano" ? "active" : ""}`}
+                  onClick={() => setTheme("volcano")}
+                >
+                  <div className="theme-opt-preview volcano-preview">
+                    <span className="dot-p"></span><span className="dot-s"></span>
+                  </div>
+                  <span>Volcano</span>
+                </button>
+                <button 
+                  className={`theme-opt-btn ${theme === "emerald" ? "active" : ""}`}
+                  onClick={() => setTheme("emerald")}
+                >
+                  <div className="theme-opt-preview emerald-preview">
+                    <span className="dot-p"></span><span className="dot-s"></span>
+                  </div>
+                  <span>Emerald</span>
+                </button>
+                <button 
+                  className={`theme-opt-btn ${theme === "cosmic" ? "active" : ""}`}
+                  onClick={() => setTheme("cosmic")}
+                >
+                  <div className="theme-opt-preview cosmic-preview">
+                    <span className="dot-p"></span><span className="dot-s"></span>
+                  </div>
+                  <span>Cosmic</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="console-section console-toggle-row">
+              <div>
+                <span className="console-section-title" style={{ marginBottom: 0 }}>Cyber-Grid Overlay</span>
+                <p className="console-section-desc">Toggle background tech grid</p>
+              </div>
+              <label className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  checked={gridEnabled} 
+                  onChange={(e) => setGridEnabled(e.target.checked)} 
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   );

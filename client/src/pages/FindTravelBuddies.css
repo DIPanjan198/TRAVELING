@@ -4,17 +4,19 @@
 
 .finder-container {
   position: relative;
-  padding-top: 120px;
-  padding-bottom: 80px;
+  padding-top: 100px;
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 48px;
   max-width: 1200px;
   margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 32px;
+  padding-right: 32px;
   overflow: hidden;
+  position: relative;
+  z-index: 10;
 }
 
 .finder-header {
@@ -27,16 +29,23 @@
 }
 
 .finder-header h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--primary-light) 0%, #a855f7 50%, var(--secondary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 4px;
 }
 
 .finder-header p {
   color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
-/* Grid */
+/* Grid layout */
 .finder-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -51,84 +60,131 @@
 }
 
 .finder-card {
-  padding: 32px;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 20px;
   height: 100%;
   position: relative;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
   transition: var(--transition-spring);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+.finder-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  opacity: 0.6;
 }
 
 .finder-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--border-focus);
+  transform: translateY(-8px);
+  border-color: var(--primary-light);
+  box-shadow: 0 24px 64px rgba(99, 102, 241, 0.15);
 }
 
 .finder-card-icon {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-light);
+  color: var(--primary-light);
+  transition: var(--transition-spring);
+}
+
+.finder-card:hover .finder-card-icon {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  transform: scale(1.08) translateZ(10px);
+  box-shadow: 0 8px 20px var(--primary-glow);
 }
 
 .finder-card h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
 }
 
 .finder-card p {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .finder-card-action {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 800;
   color: var(--primary-light);
   margin-top: auto;
   display: flex;
   align-items: center;
+  gap: 4px;
+  transition: var(--transition-smooth);
+}
+
+.finder-card:hover .finder-card-action {
+  color: #ffffff;
+  transform: translateX(4px) translateZ(5px);
 }
 
 /* Info Banner */
 .finder-info-banner {
   width: 100%;
-  padding: 32px;
+  padding: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 12px;
+  gap: 14px;
   border-color: rgba(239, 68, 68, 0.2);
   background: rgba(239, 68, 68, 0.02);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
 .banner-badge {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   color: #f87171;
-  padding: 4px 12px;
+  padding: 6px 16px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .finder-info-banner h4 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
 }
 
 .finder-info-banner p {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
   max-width: 600px;
-  line-height: 1.6;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .finder-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }

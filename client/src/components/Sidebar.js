@@ -1,38 +1,87 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSocket } from "../App";
 import "./Sidebar.css";
 
-function Sidebar() {
+function Sidebar({ isOpen, setSidebarOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const socket = useSocket();
 
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const userData = JSON.parse(localStorage.getItem("user")) || {};
   const myUserId = userData._id || null;
 
-  // Close sidebar when navigating on mobile
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [location.pathname]);
+  const [unreadSenders, setUnreadSenders] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("unreadSenders") || "[]");
+    } catch {
+      return [];
+    }
+  });
 
-  // Close sidebar when resizing to desktop
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth > 900) setMobileOpen(false);
+    if (!socket) {
+      console.log("Sidebar: Socket not initialized yet");
+      return;
+    }
+    console.log("Sidebar: Socket initialized, binding newMessageNotification listener");
+    const handleNotification = (data) => {
+      console.log("Sidebar: Received newMessageNotification:", data);
+      const match = location.pathname.match(/\/chat\/([^/]+)/);
+      const activeBuddyId = match ? match[1] : null;
+      console.log("Sidebar: Current activeBuddyId =", activeBuddyId, "Notification senderId =", data.senderId);
+      
+      if (activeBuddyId !== data.senderId) {
+        setUnreadSenders(prev => {
+          console.log("Sidebar: Current unreadSenders:", prev);
+          if (prev.includes(data.senderId)) return prev;
+          const next = [...prev, data.senderId];
+          console.log("Sidebar: Updating unreadSenders to:", next);
+          localStorage.setItem("unreadSenders", JSON.stringify(next));
+          return next;
+        });
+      }
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+
+    socket.on("newMessageNotification", handleNotification);
+    return () => {
+      console.log("Sidebar: Unbinding newMessageNotification listener");
+      socket.off("newMessageNotification", handleNotification);
+    };
+  }, [socket, location.pathname]);
+
+  // Clear unread status for active buddy when route matches `/chat/:id`
+  useEffect(() => {
+    const match = location.pathname.match(/\/chat\/([^/]+)/);
+    if (match) {
+      const activeBuddyId = match[1];
+      setUnreadSenders(prev => {
+        if (!prev.includes(activeBuddyId)) return prev;
+        const next = prev.filter(id => id !== activeBuddyId);
+        localStorage.setItem("unreadSenders", JSON.stringify(next));
+        return next;
+      });
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
+    localStorage.removeItem("unreadSenders");
     navigate("/");
+    if (window.innerWidth <= 900) {
+      setSidebarOpen(false);
+    }
   };
 
   const isActive = (path) => location.pathname === path;
 
+  const handleLinkClick = () => {
+    setSidebarOpen(false);
+  };
+
+  // Menu links with all original features included
   const navLinks = isLoggedIn ? [
     {
       to: "/dashboard",
@@ -178,54 +227,38 @@ function Sidebar() {
     }
   ];
 
-  const PlaneIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.9-.2-1.6.1-2 .5-.3.3-.4.8-.2 1.3l5 3.5-3.5 3.5-3-1-1.5 1.5 4 1 1 4 1.5-1.5-1-3 3.5-3.5 3.5 5c.5.2 1 .1 1.3-.2.4-.4.7-1.1.5-2z"/>
-    </svg>
-  );
-
   return (
     <>
-      {/* ── MOBILE: Fixed top bar with logo that opens sidebar ── */}
-      {/* This is ALWAYS visible on mobile regardless of sidebar state */}
-      <div className="mobile-topbar">
-        {/* Left: Logo pill — clicking opens sidebar */}
-        <button
-          className="mobile-logo-pill"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Open navigation menu"
-        >
-          <div className="mobile-logo-icon">
-            <PlaneIcon />
-          </div>
-          <span className="logo-text">
-            AeroTravel<span className="logo-dot">.</span>
-          </span>
-        </button>
-      </div>
-
-      {/* ── Backdrop overlay (mobile only, when open) ── */}
-      {mobileOpen && (
-        <div
-          className="sidebar-backdrop"
-          onClick={() => setMobileOpen(false)}
-          aria-hidden="true"
+      {/* Dimmed backdrop overlay visible only when sidebar is open on mobile */}
+      {isOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* ── Main Sidebar ── */}
-      <aside className={`sidebar-container glass-panel ${mobileOpen ? "sidebar-open" : ""}`}>
-
-        {/* Brand area — clicking the ✕ closes on mobile */}
-        <div className="sidebar-brand">
+      {/* Main Sidebar Container */}
+      <aside className={`sidebar-container glass-panel ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
+        <div 
+          className="sidebar-brand" 
+          onClick={() => setSidebarOpen(!isOpen)} 
+          title="Toggle Navigation Menu"
+          style={{ cursor: "pointer" }}
+        >
           <div className="sidebar-logo">
-            <PlaneIcon />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.9-.2-1.6.1-2 .5-.3.3-.4.8-.2 1.3l5 3.5-3.5 3.5-3-1-1.5 1.5 4 1 1 4 1.5-1.5-1-3 3.5-3.5 3.5 5c.5.2 1 .1 1.3-.2.4-.4.7-1.1.5-2z"/>
+            </svg>
           </div>
-          <span className="logo-text">
-            AeroTravel<span className="logo-dot">.</span>
-          </span>
+          <span className="logo-text">AeroTravel<span className="logo-dot">.</span></span>
           {/* Close button — only shown inside open sidebar on mobile */}
-          <button className="sidebar-close-btn" onClick={() => setMobileOpen(false)}>
+          <button 
+            className="sidebar-close-btn" 
+            onClick={(e) => {
+              e.stopPropagation();
+              setSidebarOpen(false);
+            }}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -240,14 +273,16 @@ function Sidebar() {
               key={item.to}
               to={item.to}
               className={`sidebar-link ${isActive(item.to) ? "active" : ""}`}
-              onClick={() => setMobileOpen(false)}
+              onClick={handleLinkClick}
             >
               {item.icon}
               <span>{item.label}</span>
+              {item.label === "Conversations" && unreadSenders.length > 0 && (
+                <span className="sidebar-unread-badge">{unreadSenders.length}</span>
+              )}
             </Link>
           ))}
         </nav>
-
 
         {/* Footer */}
         <div className="sidebar-footer">
@@ -278,9 +313,12 @@ function Sidebar() {
               </button>
             </div>
           ) : (
-            <button
-              className="btn btn-primary login-nav-btn"
-              onClick={() => { setMobileOpen(false); navigate("/login"); }}
+            <button 
+              className="btn btn-primary login-nav-btn" 
+              onClick={() => {
+                handleLinkClick();
+                navigate("/login");
+              }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>

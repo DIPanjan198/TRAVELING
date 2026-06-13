@@ -43,22 +43,47 @@ function Dashboard() {
         if (!userData?._id) {
           // If no user ID, load fallback data
           setTravelers([
-            { _id: "1", name: "Rahul", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium" },
-            { _id: "4", name: "Sara", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium" }
+            { _id: "1", name: "Rahul", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 50 },
+            { _id: "4", name: "Sara", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 50 }
           ]);
           return;
         }
-        const res = await fetch(`${API_BASE}/api/recommended/${userData._id}`);
+        const res = await fetch(`${API_BASE}/api/users`);
         const data = await res.json();
         if (Array.isArray(data)) {
-          setTravelers(data);
+          const matchedTravelers = data
+            .filter(u => u._id !== userData._id && u.email !== userData.email)
+            .filter(u => {
+              if (!u.destination || !userData.destination) return false;
+              return u.destination.toLowerCase().trim() === userData.destination.toLowerCase().trim();
+            })
+            .map(traveler => {
+              let score = 50; // Base 50% for destination match
+              if (
+                traveler.budget &&
+                userData.budget &&
+                traveler.budget.toLowerCase() === userData.budget.toLowerCase()
+              ) {
+                score += 25;
+              }
+              if (
+                traveler.travelStyle &&
+                userData.travelStyle &&
+                traveler.travelStyle.toLowerCase() === userData.travelStyle.toLowerCase()
+              ) {
+                score += 25;
+              }
+              return { ...traveler, score };
+            })
+            .sort((a, b) => b.score - a.score);
+          setTravelers(matchedTravelers);
         } else {
           setTravelers([]);
         }
       } catch (err) {
         console.error(err);
         setTravelers([
-          { _id: "10", name: "Alex Rover", destination: userData.destination, travelStyle: userData.travelStyle, budget: userData.budget }
+          { _id: "10", name: "Alex Rover", destination: userData.destination, travelStyle: userData.travelStyle, budget: userData.budget, score: 50 }
         ]);
       } finally {
         setLoading(false);
@@ -223,14 +248,21 @@ function Dashboard() {
   };
 
   const getConnectionState = (travelerId) => {
-    const conn = connections.find(c => 
-      (c.sender._id === userData._id && c.receiver._id === travelerId) ||
-      (c.sender._id === travelerId && c.receiver._id === userData._id)
-    );
+    if (!userData?._id || !connections) return { status: "none" };
+
+    const conn = connections.find(c => {
+      const sId = c.sender?._id || c.sender;
+      const rId = c.receiver?._id || c.receiver;
+      return (sId === userData._id && rId === travelerId) ||
+             (sId === travelerId && rId === userData._id);
+    });
+
     if (!conn) return { status: "none" };
+
+    const sId = conn.sender?._id || conn.sender;
     return {
       status: conn.status,
-      isSender: conn.sender._id === userData._id,
+      isSender: sId === userData._id,
       connectionId: conn._id
     };
   };
@@ -255,14 +287,9 @@ function Dashboard() {
         );
       } else {
         return (
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button className="btn btn-emerald" onClick={() => handleAcceptConnection(connState.connectionId)} style={{ padding: "8px 12px" }}>
-              Accept
-            </button>
-            <button className="btn btn-red" onClick={() => handleDeclineConnection(connState.connectionId)} style={{ padding: "8px 12px" }}>
-              Decline
-            </button>
-          </div>
+          <span className="badge badge-purple" style={{ padding: "10px 16px", textTransform: "none", fontSize: "0.85rem", fontWeight: "700" }}>
+            🔔 Request Pending
+          </span>
         );
       }
     }
@@ -281,6 +308,10 @@ function Dashboard() {
 
       {/* Main Profile Header Banner */}
       <section className="profile-banner-card glass-panel">
+        <div className="profile-cover-photo">
+          <div className="profile-cover-grid"></div>
+          <div className="profile-cover-glow"></div>
+        </div>
         <div className="profile-banner-header">
           <label className="profile-avatar-wrapper">
             {userData?.avatar && userData.avatar.startsWith("data:") ? (
@@ -431,11 +462,14 @@ function Dashboard() {
                       )}
                     </div>
                     <div className="match-body">
-                      <h4>{traveler.name}</h4>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <h4>{traveler.name}</h4>
+                        <span className="badge badge-indigo" style={{ fontSize: "0.75rem", padding: "2px 6px" }}>{traveler.score}% Match</span>
+                      </div>
                       <div className="match-tags">
-                        <span className="badge badge-indigo">📍 {traveler.destination}</span>
-                        <span className="badge badge-emerald">💰 {traveler.budget}</span>
-                        <span className="badge badge-purple">🎒 {traveler.travelStyle}</span>
+                        <span className="badge badge-indigo">📍 {traveler.destination || "Anywhere"}</span>
+                        <span className="badge badge-emerald">💰 {traveler.budget || "Medium"}</span>
+                        <span className="badge badge-purple">🎒 {traveler.travelStyle || "Flexible"}</span>
                       </div>
                     </div>
                     {renderConnectButton(traveler)}
