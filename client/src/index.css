@@ -5,26 +5,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette - Cyberpunk Indigo & Teal */
-  --bg-dark-base:    #030712;
-  --bg-dark-deep:    #090d16;
-  --bg-dark-card:    rgba(17, 24, 39, 0.7);
-  --bg-dark-glass:   rgba(10, 15, 30, 0.4);
-  
-  --primary:         #6366f1; /* Indigo */
+  /* Specification Tokens */
+  --accent:          #6366f1; /* Indigo */
+  --accent-2:        #10b981; /* Emerald-Teal */
+  --glow:            rgba(99, 102, 241, 0.15);
+  --bg:              #030712;
+  --surface:         rgba(17, 24, 39, 0.7);
+  --text:            #f3f4f6;
+  --text-dim:        #9ca3af;
+
+  /* Aliases for backwards compatibility */
+  --primary:         var(--accent);
   --primary-light:   #818cf8;
-  --primary-glow:    rgba(99, 102, 241, 0.15);
-  
-  --secondary:       #10b981; /* Emerald-Teal */
+  --primary-glow:    var(--glow);
+  --secondary:       var(--accent-2);
   --secondary-light: #34d399;
   --secondary-glow:  rgba(16, 185, 129, 0.15);
+  --bg-dark-base:    var(--bg);
+  --bg-dark-deep:    #090d16;
+  --bg-dark-card:    var(--surface);
+  --bg-dark-glass:   rgba(10, 15, 30, 0.4);
+  --text-primary:    var(--text);
+  --text-secondary:  var(--text-dim);
+  --text-muted:      #6b7280;
 
   --accent-purple:   #a855f7;
   --accent-pink:     #ec4899;
-  
-  --text-primary:    #f3f4f6;
-  --text-secondary:  #9ca3af;
-  --text-muted:      #6b7280;
   
   --border-light:    rgba(255, 255, 255, 0.08);
   --border-focus:    rgba(99, 102, 241, 0.4);
@@ -35,8 +41,10 @@
   --radius-lg:       24px;
   --radius-full:     9999px;
   
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth:     cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: all 0.3s var(--ease-smooth);
+  --transition-spring: all 0.5s var(--ease-spring);
 }
 
 /* Base resets */
@@ -79,6 +87,9 @@ body::before {
   z-index: -1;
   opacity: var(--grid-opacity, 1);
   transition: opacity 0.3s ease-in-out;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: opacity;
 }
 
 /* Custom Scrollbar */
@@ -292,6 +303,53 @@ body::before {
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
+/* Universal Native Select & Option High-Contrast Styling */
+select,
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 16px !important;
+  padding-right: 40px !important;
+  cursor: pointer;
+  color: var(--text-primary) !important;
+  background-color: var(--bg-dark-deep, #090d16);
+}
+
+select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+}
+
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Theme-specific option styling */
+[data-theme="volcano"] select option {
+  background-color: #1c0a0a !important;
+  color: #fecdd3 !important;
+}
+
+[data-theme="emerald"] select option {
+  background-color: #062017 !important;
+  color: #a7f3d0 !important;
+}
+
+[data-theme="cosmic"] select option {
+  background-color: #160926 !important;
+  color: #e9d5ff !important;
+}
+
 /* ── Background animated blobs ── */
 .bg-blob {
   position: absolute;
@@ -374,15 +432,23 @@ body::before {
   left: 0;
   right: 0;
   height: 64px;
-  background: var(--bg-dark-glass);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border-light);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid transparent;
   display: flex;
   align-items: center;
   padding: 0 24px;
   z-index: 250;
-  transition: var(--transition-smooth);
+  transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.app-header.scrolled {
+  background: var(--surface, rgba(17, 24, 39, 0.75));
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .logo-toggle-btn {
@@ -593,64 +659,100 @@ body::before {
    AEROTRAVEL PREMIUM THEMES CONFIGURATION
    ============================================= */
 
+/* Heading typography according to specification */
+h1, h2, h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* =============================================
+   AEROTRAVEL PREMIUM THEMES CONFIGURATION
+   ============================================= */
+
+/* Default Indigo Theme (explicit attribute target) */
+[data-theme="indigo"] {
+  --accent:          #6366f1;
+  --accent-2:        #10b981;
+  --glow:            rgba(99,102,241,.15);
+  --bg:              #030712;
+  --surface:         rgba(17,24,39,.7);
+  --text:            #f3f4f6;
+  --text-dim:        #9ca3af;
+  --bg-dark-base:    #030712;
+  --bg-dark-deep:    #090d16;
+  --bg-dark-card:    rgba(17,24,39,.7);
+  --bg-dark-glass:   rgba(10,15,30,.4);
+  --border-focus:    rgba(99,102,241,.4);
+}
+
 /* Sunset Volcano Theme */
 [data-theme="volcano"] {
+  --accent:          #f43f5e;
+  --accent-2:        #f59e0b;
+  --glow:            rgba(244,63,94,.15);
+  --bg:              #0a0303;
+  --surface:         rgba(26,12,12,.7);
+  --text:            #fff1f2;
+  --text-dim:        #fda4af;
   --bg-dark-base:    #0a0303;
   --bg-dark-deep:    #120606;
   --bg-dark-card:    rgba(26, 12, 12, 0.7);
   --bg-dark-glass:   rgba(18, 6, 6, 0.45);
-  
-  --primary:         #f43f5e; /* Rose / Coral Red */
-  --primary-light:   #fb7185;
-  --primary-glow:    rgba(244, 63, 94, 0.15);
-  
-  --secondary:       #f59e0b; /* Amber */
-  --secondary-light: #fbbf24;
-  --secondary-glow:  rgba(245, 158, 11, 0.15);
-
-  --accent-purple:   #ec4899; /* Hot Pink */
   --border-focus:    rgba(244, 63, 94, 0.4);
 }
 
 /* Forest Emerald Theme */
 [data-theme="emerald"] {
+  --accent:          #10b981;
+  --accent-2:        #06b6d4;
+  --glow:            rgba(16,185,129,.15);
+  --bg:              #020b08;
+  --surface:         rgba(8,26,20,.7);
+  --text:            #ecfdf5;
+  --text-dim:        #6ee7b7;
   --bg-dark-base:    #020b08;
   --bg-dark-deep:    #04140f;
   --bg-dark-card:    rgba(8, 26, 20, 0.7);
   --bg-dark-glass:   rgba(4, 18, 14, 0.45);
-  
-  --primary:         #10b981; /* Emerald Green */
-  --primary-light:   #34d399;
-  --primary-glow:    rgba(16, 185, 129, 0.15);
-  
-  --secondary:       #06b6d4; /* Cyan */
-  --secondary-light: #22d3ee;
-  --secondary-glow:  rgba(6, 182, 212, 0.15);
-
-  --accent-purple:   #84cc16; /* Lime Accent */
   --border-focus:    rgba(16, 185, 129, 0.4);
 }
 
 /* Cosmic Nebula Theme */
 [data-theme="cosmic"] {
+  --accent:          #a855f7;
+  --accent-2:        #ec4899;
+  --glow:            rgba(168,85,247,.15);
+  --bg:              #07020d;
+  --surface:         rgba(20,10,35,.7);
+  --text:            #faf5ff;
+  --text-dim:        #e9d5ff;
   --bg-dark-base:    #07020d;
   --bg-dark-deep:    #0e051a;
   --bg-dark-card:    rgba(20, 10, 35, 0.7);
   --bg-dark-glass:   rgba(14, 5, 26, 0.45);
-  
-  --primary:         #a855f7; /* Purple */
-  --primary-light:   #c084fc;
-  --primary-glow:    rgba(168, 85, 247, 0.15);
-  
-  --secondary:       #ec4899; /* Pink Accent */
-  --secondary-light: #f472b6;
-  --secondary-glow:  rgba(236, 72, 153, 0.15);
-
-  --accent-purple:   #6366f1; /* Indigo */
   --border-focus:    rgba(168, 85, 247, 0.4);
 }
 
 /* Global Transition overrides for premium UI scaling */
 .app-layout, .sidebar-container, .main-content, .glass-panel, .btn, .form-input, .badge {
-  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.btn:hover {
+  transition: transform 0.4s var(--ease-spring), background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  .tilt-card-container {
+    transform: none !important;
+  }
+}
+

@@ -1,0 +1,20 @@
+.scroll-reveal-container {
+  opacity: 0;
+  transform: translateY(36px) rotateX(6deg);
+  transform-origin: bottom center;
+  transition: opacity 0.8s var(--ease-smooth, cubic-bezier(0.16, 1, 0.3, 1)),
+              transform 0.8s var(--ease-smooth, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.scroll-reveal-container.is-revealed {
+  opacity: 1;
+  transform: translateY(0) rotateX(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal-container {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AeroTravel - Project Layout & Architecture Specification</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 40px;
+      background: linear-gradient(135deg, #090d16 0%, #030712 100%);
+      color: #ffffff;
+      page-break-after: always;
+      position: relative;
+    }
+
+    .cover-header {
+      border-left: 4px solid #6366f1;
+      padding-left: 20px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid #6366f1;
+      color: #818cf8;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .cover-title {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cover-subtitle {
+      font-size: 20px;
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .cover-meta {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 24px;
+      border-radius: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .meta-item h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #6b7280;
+      letter-spacing: 1px;
+    }
+
+    .meta-item p {
+      font-size: 16px;
+      font-weight: 700;
+      color: #34d399;
+      margin-top: 4px;
+    }
+
+    /* Content Layout */
+    .section {
+      padding: 24px 0;
+      page-break-inside: avoid;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #6366f1;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 14px 0 8px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+    }
+
+    /* Tree Directory */
+    .tree-box {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 12px 0 20px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+
+    .tree-dir { color: #818cf8; font-weight: bold; }
+    .tree-file { color: #34d399; }
+    .tree-comment { color: #64748b; font-style: italic; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px;
+      font-size: 12px;
+    }
+
+    th {
+      background: #6366f1;
+      color: #ffffff;
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Cards Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 14px 0;
+    }
+
+    .card {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .card-title {
+      font-weight: 700;
+      color: #4338ca;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-primary { background: #e0e7ff; color: #4338ca; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <div class="cover-badge">Architecture & Layout Guide</div>
+      <h1 class="cover-title">AeroTravel</h1>
+      <p class="cover-subtitle">Travel Buddy Finder — Full Project Layout, System Architecture & Technical Specification</p>
+    </div>
+
+    <div class="cover-meta">
+      <div class="meta-item">
+        <h4>Creator & Lead Engineer</h4>
+        <p>Dipanjan Choudhuri</p>
+      </div>
+      <div class="meta-item">
+        <h4>Contact Phone</h4>
+        <p>+91 9064753890</p>
+      </div>
+      <div class="meta-item">
+        <h4>Contact Email</h4>
+        <p>dipanjanchoudhuri2024@gmail.com</p>
+      </div>
+      <div class="meta-item">
+        <h4>Tech Stack</h4>
+        <p>React 19 · Node.js · Express · Socket.IO · MongoDB</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: SYSTEM OVERVIEW -->
+  <div class="section">
+    <h2>1. High-Level System Architecture</h2>
+    <p>
+      <strong>AeroTravel</strong> is built using a modern decoupled <strong>Client-Server (Monorepo) Architecture</strong> designed for high performance, real-time interactivity, and responsive glassmorphic aesthetics.
+    </p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Frontend Client Layer</div>
+        <p><strong>Framework:</strong> React 19 & React Router DOM v7</p>
+        <p><strong>Styling:</strong> Modular CSS3 Design System with Cyberpunk Glassmorphism & Theme Customizer Engine</p>
+        <p><strong>Real-Time:</strong> Socket.IO Client for instant direct messaging & notifications</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Backend REST & Socket Server</div>
+        <p><strong>Runtime:</strong> Node.js & Express.js</p>
+        <p><strong>Database:</strong> MongoDB & Mongoose ODM</p>
+        <p><strong>Authentication:</strong> BcryptJS password hashing & session management</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: DIRECTORY TREE -->
+  <div class="section">
+    <h2>2. Complete Project Directory Layout</h2>
+    <p>Below is the complete file and folder hierarchy for both client and server applications:</p>
+
+    <div class="tree-box">
+<span class="tree-dir">travel-buddy-finder/</span>
+├── <span class="tree-dir">client/</span>                        <span class="tree-comment"># React 19 Frontend Application</span>
+│   ├── <span class="tree-dir">public/</span>                      <span class="tree-comment"># HTML template and favicon assets</span>
+│   └── <span class="tree-dir">src/</span>
+│       ├── <span class="tree-dir">components/</span>              <span class="tree-comment"># Reusable global layout UI elements</span>
+│       │   ├── <span class="tree-file">Sidebar.js</span>            <span class="tree-comment"># Navigation drawer & user profile status</span>
+│       │   ├── <span class="tree-file">Sidebar.css</span>           <span class="tree-comment"># Drawer styles & responsive overlays</span>
+│       │   ├── <span class="tree-file">Footer.js</span>             <span class="tree-comment"># Main website footer featuring Creator Dipanjan Choudhuri</span>
+│       │   ├── <span class="tree-file">Footer.css</span>            <span class="tree-comment"># Footer grid styling & contact links</span>
+│       │   └── <span class="tree-file">ProtectedRoute.js</span>    <span class="tree-comment"># Authentication route guard wrapper</span>
+│       ├── <span class="tree-dir">pages/</span>                   <span class="tree-comment"># 16 Interactive Application Page Views</span>
+│       │   ├── <span class="tree-file">Home.js</span> & <span class="tree-file">Home.css</span>     <span class="tree-comment"># Hero, Match Wizard, Stats & Aesthetic Theme Switcher</span>
+│       │   ├── <span class="tree-file">Login.js</span>              <span class="tree-comment"># Google Material 3 Sign-In Experience</span>
+│       │   ├── <span class="tree-file">Register.js</span>           <span class="tree-comment"># Google Material 3 Multi-Step Registration</span>
+│       │   ├── <span class="tree-file">Auth.css</span>              <span class="tree-comment"># Material 3 Input group floating label styles</span>
+│       │   ├── <span class="tree-file">Dashboard.js</span>          <span class="tree-comment"># User Workspace, Preference Editor & Trip Planner</span>
+│       │   ├── <span class="tree-file">TripCost.js</span>           <span class="tree-comment"># Free-form Multi-Tier Trip Cost Estimator Engine</span>
+│       │   ├── <span class="tree-file">TripCost.css</span>          <span class="tree-comment"># Breakdown charts & daily rate cards styling</span>
+│       │   ├── <span class="tree-file">AiTripPlanner.js</span>      <span class="tree-comment"># AI Itinerary Generator & Day-by-Day schedule</span>
+│       │   ├── <span class="tree-file">ExpenseSplitter.js</span>    <span class="tree-comment"># Group Expense Splitter & Settlement Solver</span>
+│       │   ├── <span class="tree-file">CurrencyConverter.js</span>  <span class="tree-comment"># Exchange rate calculator with instant pairing</span>
+│       │   ├── <span class="tree-file">WeatherCheck.js</span>       <span class="tree-comment"># Real-time Open-Meteo Weather API forecasting</span>
+│       │   ├── <span class="tree-file">PackingList.js</span>        <span class="tree-comment"># Dynamic packing checklist generator</span>
+│       │   ├── <span class="tree-file">TravelJournal.js</span>      <span class="tree-comment"># Travel memory logger with mood chips</span>
+│       │   ├── <span class="tree-file">TravelQuiz.js</span>         <span class="tree-comment"># Travel personality test & destination match</span>
+│       │   ├── <span class="tree-file">FindTravelBuddies.js</span>  <span class="tree-comment"># Explorer hub & candidate finder</span>
+│       │   ├── <span class="tree-file">DestinationMatching.js</span><span class="tree-comment"># Real-time traveler matching feed</span>
+│       │   ├── <span class="tree-file">ExploreDestinations.js</span><span class="tree-comment"># Curated destination cards feed</span>
+│       │   └── <span class="tree-file">chat.js</span> & <span class="tree-file">chat.css</span>   <span class="tree-comment"># Real-time WebSocket Messaging UI</span>
+│       ├── <span class="tree-dir">utils/</span>
+│       │   └── <span class="tree-file">api.js</span>                <span class="tree-comment"># API Base URL configuration module</span>
+│       ├── <span class="tree-file">App.js</span>                    <span class="tree-comment"># Main App Provider, Socket Context & Routes</span>
+│       └── <span class="tree-file">index.css</span>                 <span class="tree-comment"># Global Cyberpunk Design Tokens, Select Fixes & Themes</span>
+└── <span class="tree-dir">Server/</span>                        <span class="tree-comment"># Express.js REST & WebSockets Backend</span>
+    ├── <span class="tree-file">index.js</span>                      <span class="tree-comment"># Express Server, Mongoose Schemas & Socket.IO Handler</span>
+    └── <span class="tree-file">package.json</span>                  <span class="tree-comment"># Server Dependencies</span>
+    </div>
+  </div>
+
+  <!-- SECTION 3: FRONTEND PAGE MODULES -->
+  <div class="section">
+    <h2>3. Frontend Module & Page Matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Module Name</th>
+          <th>File Location</th>
+          <th>Core Purpose & Features</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Home</strong></td>
+          <td><code>src/pages/Home.js</code></td>
+          <td>Landing page with Quick Match Wizard, animated counters, customizer console, and global footer.</td>
+        </tr>
+        <tr>
+          <td><strong>Trip Cost Estimator</strong></td>
+          <td><code>src/pages/TripCost.js</code></td>
+          <td>Multi-tier cost calculation engine for any typed destination with room sharing & daily rate breakdown.</td>
+        </tr>
+        <tr>
+          <td><strong>AI Trip Planner</strong></td>
+          <td><code>src/pages/AiTripPlanner.js</code></td>
+          <td>Generates structured day-by-day itineraries based on travel style and duration.</td>
+        </tr>
+        <tr>
+          <td><strong>Expense Splitter</strong></td>
+          <td><code>src/pages/ExpenseSplitter.js</code></td>
+          <td>Splits group travel bills and automatically calculates optimized settlement balances.</td>
+        </tr>
+        <tr>
+          <td><strong>Real-Time Chat</strong></td>
+          <td><code>src/pages/chat.js</code></td>
+          <td>Instant 1-on-1 WebSocket chat with online status badges and unread message notifications.</td>
+        </tr>
+        <tr>
+          <td><strong>Destination Matching</strong></td>
+          <td><code>src/pages/DestinationMatching.js</code></td>
+          <td>Filters and pairs registered travelers heading to identical destinations or budgets.</td>
+        </tr>
+        <tr>
+          <td><strong>Currency Converter</strong></td>
+          <td><code>src/pages/CurrencyConverter.js</code></td>
+          <td>Instant currency exchange rate conversion supporting USD, EUR, INR, GBP, JPY, AED.</td>
+        </tr>
+        <tr>
+          <td><strong>Weather Check</strong></td>
+          <td><code>src/pages/WeatherCheck.js</code></td>
+          <td>Fetches live temperature and weather condition parameters via Open-Meteo API.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 4: BACKEND REST & SOCKET SPECIFICATION -->
+  <div class="section">
+    <h2>4. Backend API & Real-Time Socket Architecture</h2>
+    
+    <h3>HTTP REST Endpoints</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Endpoint</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-success">POST</span></td>
+          <td><code>/api/auth/register</code></td>
+          <td>Registers new user account with destination, budget range, and travel style preferences.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">POST</span></td>
+          <td><code>/api/auth/login</code></td>
+          <td>Authenticates user credentials against bcrypt-hashed passwords.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">GET</span></td>
+          <td><code>/api/users</code></td>
+          <td>Returns list of registered travelers for destination matching and chat discovery.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">GET</span></td>
+          <td><code>/api/messages/:user1Id/:user2Id</code></td>
+          <td>Fetches persistent message conversation history between two users.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Socket.IO Real-Time Events</h3>
+    <ul>
+      <li><code>registerUser (userId)</code> — Binds Socket ID to logged-in User ID for active routing.</li>
+      <li><code>sendMessage ({ senderId, receiverId, text })</code> — Persists message and delivers real-time payload.</li>
+      <li><code>newMessageNotification</code> — Triggers audio chime and floating toast badge for receiver.</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 5: UI/UX DESIGN SYSTEM -->
+  <div class="section">
+    <h2>5. UI/UX Design System & Customization Engine</h2>
+    <p>
+      The application features a modern <strong>Cyberpunk Glassmorphism Design System</strong> built with CSS custom variables:
+    </p>
+    <ul>
+      <li><strong>Color Palettes:</strong> Cyberpunk Indigo (`#6366f1`), Sunset Volcano (`#f43f5e`), Forest Emerald (`#10b981`), Cosmic Nebula (`#a855f7`).</li>
+      <li><strong>High-Contrast Select Styling:</strong> Custom `#0f172a` option popovers to guarantee 100% text legibility across all themes and operating systems.</li>
+      <li><strong>Typography:</strong> Google Fonts <em>Outfit</em> (headings) and <em>Plus Jakarta Sans</em> (body & controls).</li>
+    </ul>
+  </div>
+
+  <!-- FOOTER NOTE -->
+  <div class="footer-note">
+    AeroTravel — Travel Buddy Finder | Created & Designed by <strong>Dipanjan Choudhuri</strong> (+91 9064753890 | dipanjanchoudhuri2024@gmail.com)
+  </div>
+
+</body>
+</html>

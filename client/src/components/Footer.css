@@ -1,0 +1,299 @@
+/* =============================================
+   AEROTRAVEL FOOTER — Created by Dipanjan Choudhuri
+   ============================================= */
+
+.aero-footer {
+  position: relative;
+  background: var(--bg-dark-deep, #090d16);
+  border-top: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
+  padding: 80px 0 40px;
+  margin-top: 100px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.aero-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-light, #818cf8) 50%, transparent 100%);
+  opacity: 0.6;
+}
+
+.aero-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* Creator Spotlight Card */
+.creator-card {
+  padding: 32px 40px;
+  border-radius: var(--radius-lg, 24px);
+  position: relative;
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.creator-badge {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  padding: 4px 14px;
+  border-radius: var(--radius-full, 9999px);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.2));
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: var(--primary-light, #818cf8);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.creator-content {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.creator-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #10b981) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px var(--primary-glow, rgba(99, 102, 241, 0.2));
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.creator-avatar span {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.creator-details {
+  flex: 1;
+}
+
+.creator-details h3 {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.creator-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--secondary-light, #34d399);
+  margin-top: 2px;
+}
+
+.creator-bio {
+  font-size: 0.92rem;
+  color: var(--text-secondary, #9ca3af);
+  margin-top: 8px;
+  line-height: 1.6;
+  max-width: 620px;
+}
+
+.creator-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.creator-link-btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md, 14px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
+  color: var(--text-primary, #f3f4f6);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition-smooth, all 0.3s ease);
+}
+
+.creator-link-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--primary, #6366f1);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Footer Columns Grid */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+}
+
+.footer-col h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-col ul li a {
+  color: var(--text-secondary, #9ca3af);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: var(--transition-smooth, all 0.3s ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-col ul li a:hover {
+  color: var(--secondary-light, #34d399);
+  transform: translateX(4px);
+}
+
+/* Brand Column */
+.brand-col .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.brand-col .logo-icon {
+  font-size: 1.8rem;
+}
+
+.brand-col .logo-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--text-primary, #f3f4f6) 0%, var(--primary-light, #818cf8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-brand-desc {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.footer-system-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--secondary-light, #34d399);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--secondary, #10b981);
+  box-shadow: 0 0 10px var(--secondary, #10b981);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  padding-top: 32px;
+  border-top: 1px solid var(--border-light, rgba(255, 255, 255, 0.06));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-bottom p {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.88rem;
+}
+
+.footer-bottom strong {
+  color: var(--text-primary, #f3f4f6);
+}
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-bottom-links a {
+  color: var(--text-muted, #6b7280);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.footer-bottom-links a:hover {
+  color: var(--text-primary, #f3f4f6);
+}
+
+.footer-bottom-links span {
+  color: var(--border-light, rgba(255, 255, 255, 0.15));
+}
+
+/* Responsiveness */
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .creator-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .creator-badge {
+    position: static;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

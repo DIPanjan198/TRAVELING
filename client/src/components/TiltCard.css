@@ -1,0 +1,58 @@
+.tilt-card-perspective {
+  perspective: 1000px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tilt-card-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.tilt-card-container.is-hovering {
+  transition: transform 0.08s ease-out;
+  will-change: transform;
+}
+
+/* Ensure children sit above glare overlay so inputs, buttons, links are 100% clickable */
+.tilt-card-container > *:not(.tilt-card-glare) {
+  position: relative;
+  z-index: 5;
+}
+
+/* Prevent double-transform oscillation on inner cards */
+.tilt-card-container .glass-panel,
+.tilt-card-container .auth-card,
+.tilt-card-container .register-card {
+  transform: none !important;
+}
+
+.tilt-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: var(--glare-opacity, 0);
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    transparent 65%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.tilt-card-container.is-hovering .tilt-card-glare {
+  opacity: 1;
+}

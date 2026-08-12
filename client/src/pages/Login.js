@@ -1,17 +1,63 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { API_BASE } from "../utils/api";
+import TiltCard from "../components/TiltCard";
+import AestheticConsole from "../components/AestheticConsole";
 import "./Auth.css";
 
 function Login() {
+  const [step, setStep] = useState(1); // 1 = Email, 2 = Password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [emailInvalid, setEmailInvalid] = useState(false);
+  const [animationClass, setAnimationClass] = useState("slide-in-right");
+
   const navigate = useNavigate();
+
+  const validateEmail = (emailVal) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailVal);
+  };
+
+  const handleNextStep = (e) => {
+    e?.preventDefault();
+    setError(null);
+    setEmailInvalid(false);
+
+    if (!email) {
+      setError("Enter an email address");
+      setEmailInvalid(true);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Enter a valid email address");
+      setEmailInvalid(true);
+      return;
+    }
+
+    setAnimationClass("slide-in-right");
+    setStep(2);
+  };
+
+  const handleBackStep = () => {
+    setError(null);
+    setAnimationClass("slide-in-left");
+    setStep(1);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    if (!password) {
+      setError("Enter your password");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/login`, {
@@ -22,15 +68,17 @@ function Login() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.message || "Invalid credentials! Double check your email and password.");
+        setError(data.message || "Wrong password. Try again or click Forgot password to reset it.");
+        setLoading(false);
         return;
       }
+
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("isLoggedIn", "true");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Server connection failed. Please try again.");
+      setError("Connection error. Check that backend server is active.");
     } finally {
       setLoading(false);
     }
@@ -41,67 +89,158 @@ function Login() {
       <div className="bg-blob blob-primary" />
       <div className="bg-blob blob-secondary" />
 
-      <div className="auth-card glass-panel">
-        <div className="auth-brand">
-          <div className="auth-brand-logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.9-.2-1.6.1-2 .5-.3.3-.4.8-.2 1.3l5 3.5-3.5 3.5-3-1-1.5 1.5 4 1 1 4 1.5-1.5-1-3 3.5-3.5 3.5 5c.5.2 1 .1 1.3-.2.4-.4.7-1.1.5-2z"/>
-            </svg>
+      <TiltCard maxTilt={5}>
+        <div className="auth-card">
+          {/* Playful Google logo style */}
+          <div className="auth-brand google-text">
+            <span>A</span>
+            <span>e</span>
+            <span>r</span>
+            <span>o</span>
+            <span>T</span>
+            <span>r</span>
+            <span>a</span>
+            <span>v</span>
+            <span>e</span>
+            <span>l</span>
           </div>
-          <span>AeroTravel</span>
+
+          {step === 1 ? (
+            <div key="step1" className={`step-container ${animationClass}`}>
+              <h1>Sign in</h1>
+              <p className="auth-subtitle">to continue to AeroTravel</p>
+
+              <form onSubmit={handleNextStep} className="auth-form" noValidate>
+                <div className="google-input-group">
+                  <input
+                    type="email"
+                    className={emailInvalid ? "invalid" : ""}
+                    placeholder=" "
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailInvalid) setEmailInvalid(false);
+                      if (error) setError(null);
+                    }}
+                    autoFocus
+                    required
+                  />
+                  <label>Email address</label>
+                </div>
+
+                {error && (
+                  <div className="google-error-message">
+                    <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <div className="google-button-row">
+                  <button
+                    type="button"
+                    className="google-btn-secondary"
+                    onClick={() => navigate("/register")}
+                  >
+                    Create account
+                  </button>
+                  <button type="submit" className="google-btn-primary">
+                    Next
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div key="step2" className={`step-container ${animationClass}`}>
+              <h1>Welcome</h1>
+              
+              {/* Profile email badge */}
+              <div className="google-profile-badge" onClick={handleBackStep} title="Change email">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-3.084A5 5 0 0010 11z" clipRule="evenodd" />
+                </svg>
+                <span className="google-profile-badge-email">{email}</span>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+
+              <form onSubmit={handleLogin} className="auth-form" noValidate>
+                <div className="google-input-group">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className={error ? "invalid" : ""}
+                    placeholder=" "
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    autoFocus
+                    required
+                  />
+                  <label>Enter your password</label>
+                </div>
+
+                {/* Show password check */}
+                <div 
+                  className="google-checkbox-row" 
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={() => {}}
+                  />
+                  <span>Show password</span>
+                </div>
+
+                {error && (
+                  <div className="google-error-message">
+                    <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <div className="google-button-row">
+                  <Link to="/forgot-password" className="google-link">
+                    Forgot password?
+                  </Link>
+                  <button 
+                    type="submit" 
+                    className="google-btn-primary" 
+                    disabled={loading}
+                  >
+                    {loading ? "Signing in..." : "Next"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
+      </TiltCard>
 
-        <h2>Welcome Back</h2>
-        <p className="auth-subtitle">Log in to coordinate with your active travel partners.</p>
-
-        <form onSubmit={handleLogin} className="auth-form">
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <input
-              type="email"
-              className="form-input"
-              placeholder="e.g. wanderer@domain.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <div className="form-label-row">
-              <label className="form-label">Password</label>
-              <Link to="/forgot-password" style={{ color: "var(--primary-light)", fontSize: "0.8rem", textDecoration: "none" }}>
-                Forgot Password?
-              </Link>
-            </div>
-            <div className="password-input-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                className="form-input"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
-            {loading ? "Authenticating..." : "Sign In"}
-          </button>
-        </form>
-
-        <div className="auth-footer-text">
-          New to AeroTravel? <Link to="/register">Create an account</Link>
+      {/* Authentic Google page footer */}
+      <div className="google-footer">
+        <div className="google-footer-left">
+          <select defaultValue="en">
+            <option value="en">English (United States)</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </div>
+        <div className="google-footer-right">
+          <Link to="/help">Help</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
         </div>
       </div>
+
+      <AestheticConsole />
     </div>
   );
 }

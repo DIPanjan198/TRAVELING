@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import TiltCard from "../components/TiltCard";
+import ScrollReveal from "../components/ScrollReveal";
+import AestheticConsole from "../components/AestheticConsole";
 import "./Features.css";
 
 const featureCards = [
@@ -93,7 +96,7 @@ function Features() {
       <div className="bg-blob blob-secondary" />
 
       {/* Hero Section */}
-      <header className="features-hero">
+      <ScrollReveal className="features-hero">
         <span className="badge badge-indigo hero-badge animate-pulse">
           ✨ Platform Features
         </span>
@@ -114,12 +117,10 @@ function Features() {
             Explore Destinations
           </button>
         </div>
-      </header>
-
-
+      </ScrollReveal>
 
       {/* Core Feature Cards */}
-      <section className="features-main-section">
+      <ScrollReveal className="features-main-section">
         <div className="features-section-label">
           <span className="badge badge-emerald">Core Capabilities</span>
           <h2>What AeroTravel Offers</h2>
@@ -128,22 +129,24 @@ function Features() {
 
         <div className="features-cards-grid">
           {featureCards.map((f, i) => (
-            <div className="feature-detail-card glass-panel" key={i}>
-              <div className={`feature-card-icon-wrap ${f.colorClass}`}>
-                <span>{f.icon}</span>
+            <TiltCard key={i} maxTilt={8}>
+              <div className="feature-detail-card glass-panel" style={{ height: "100%" }}>
+                <div className={`feature-card-icon-wrap ${f.colorClass}`}>
+                  <span>{f.icon}</span>
+                </div>
+                <h3>{f.title}</h3>
+                <p>{f.desc}</p>
+                <span className={`feature-card-tag ${f.tagClass}`}>
+                  {f.tag}
+                </span>
               </div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
-              <span className={`feature-card-tag ${f.tagClass}`}>
-                {f.tag}
-              </span>
-            </div>
+            </TiltCard>
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* How It Works */}
-      <section className="how-it-works-section">
+      <ScrollReveal className="how-it-works-section">
         <div className="features-section-label">
           <span className="badge badge-purple">Process</span>
           <h2>How It Works</h2>
@@ -152,71 +155,79 @@ function Features() {
 
         <div className="steps-timeline">
           {steps.map((step, i) => (
-            <div className="step-item glass-panel" key={i}>
-              <div className="step-number">{step.num}</div>
-              <div className="step-content">
-                <h3>{step.title}</h3>
-                <p>{step.desc}</p>
+            <TiltCard key={i} maxTilt={6}>
+              <div className="step-item glass-panel" style={{ height: "100%" }}>
+                <div className="step-number">{step.num}</div>
+                <div className="step-content">
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
               </div>
-            </div>
+            </TiltCard>
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* Comparison Table */}
-      <section className="comparison-section">
+      <ScrollReveal className="comparison-section">
         <div className="features-section-label">
           <span className="badge badge-indigo">Comparison</span>
           <h2>AeroTravel vs. Solo Travel</h2>
           <p>See why traveling with AeroTravel is a smarter, richer experience.</p>
         </div>
 
-        <div className="comparison-table-wrapper glass-panel">
-          <table className="comparison-table">
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th>Solo Booking</th>
-                <th className="highlight-col">AeroTravel ✈️</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonRows.map((row, i) => (
-                <tr key={i}>
-                  <td className="row-label">{row.feature}</td>
-                  <td>
-                    {row.solo
-                      ? <span className="check-icon">✅</span>
-                      : <span className="cross-icon">✕</span>}
-                  </td>
-                  <td className="highlight-col">
-                    {row.aero
-                      ? <span className="check-icon">✅</span>
-                      : <span className="cross-icon">✕</span>}
-                  </td>
+        <TiltCard maxTilt={4}>
+          <div className="comparison-table-wrapper glass-panel">
+            <table className="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Solo Booking</th>
+                  <th className="highlight-col">AeroTravel ✈️</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row, i) => (
+                  <tr key={i}>
+                    <td className="row-label">{row.feature}</td>
+                    <td>
+                      {row.solo
+                        ? <span className="check-icon">✅</span>
+                        : <span className="cross-icon">✕</span>}
+                    </td>
+                    <td className="highlight-col">
+                      {row.aero
+                        ? <span className="check-icon">✅</span>
+                        : <span className="cross-icon">✕</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </TiltCard>
+      </ScrollReveal>
 
       {/* CTA Banner */}
-      <div className="features-cta-banner">
-        <h2>Ready to Find Your Travel Buddy?</h2>
-        <p>
-          Join thousands of explorers who have already found their perfect
-          companion through AeroTravel. Your next adventure is waiting.
-        </p>
-        <div className="cta-btn-group">
-          <button className="btn btn-primary" onClick={() => navigate("/register")}>
-            Create Free Account
-          </button>
-          <button className="btn btn-secondary" onClick={() => navigate("/budget-estimator")}>
-            Try Budget Estimator
-          </button>
+      <ScrollReveal className="features-cta-banner-wrapper">
+        <div className="features-cta-banner">
+          <h2>Ready to Find Your Travel Buddy?</h2>
+          <p>
+            Join thousands of explorers who have already found their perfect
+            companion through AeroTravel. Your next adventure is waiting.
+          </p>
+          <div className="cta-btn-group">
+            <button className="btn btn-primary" onClick={() => navigate("/register")}>
+              Create Free Account
+            </button>
+            <button className="btn btn-secondary" onClick={() => navigate("/budget-estimator")}>
+              Try Budget Estimator
+            </button>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
+
+      <AestheticConsole />
     </div>
   );
 }

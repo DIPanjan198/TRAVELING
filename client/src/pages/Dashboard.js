@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../utils/api";
+import TiltCard from "../components/TiltCard";
+import ScrollReveal from "../components/ScrollReveal";
+import AestheticConsole from "../components/AestheticConsole";
 import "./Dashboard.css";
 
 function Dashboard() {
@@ -27,15 +30,21 @@ function Dashboard() {
   const [prefBudget, setPrefBudget] = useState(userData.budget || "");
   const [prefStyle, setPrefStyle] = useState(userData.travelStyle || "");
 
-  // Itinerary items list
+  // Custom alert banners state
+  const [alertMsg, setAlertMsg] = useState(null);
+  const [alertType, setAlertType] = useState("success");
+
+  // Itinerary items list with categories
   const [itinerary, setItinerary] = useState([
-    { id: 1, text: "Book flight tickets", done: true },
-    { id: 2, text: "Check hotel bookings & ratings", done: false },
-    { id: 3, text: "Pack hiking boots & rain jackets", done: false },
-    { id: 4, text: "Convert currency & activate card", done: false }
+    { id: 1, text: "Book flight tickets", done: true, category: "flights" },
+    { id: 2, text: "Check hotel bookings & ratings", done: false, category: "booking" },
+    { id: 3, text: "Pack hiking boots & rain jackets", done: false, category: "packing" },
+    { id: 4, text: "Convert currency & activate card", done: false, category: "general" }
   ]);
   const [newItineraryItem, setNewItineraryItem] = useState("");
+  const [newItineraryCategory, setNewItineraryCategory] = useState("general");
 
+  // Fetch match recommendations
   useEffect(() => {
     const fetchRecommended = async () => {
       setLoading(true);
@@ -43,8 +52,8 @@ function Dashboard() {
         if (!userData?._id) {
           // If no user ID, load fallback data
           setTravelers([
-            { _id: "1", name: "Rahul", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 50 },
-            { _id: "4", name: "Sara", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 50 }
+            { _id: "1", name: "Rahul", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 100 },
+            { _id: "4", name: "Sara", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 100 }
           ]);
           return;
         }
@@ -83,7 +92,7 @@ function Dashboard() {
       } catch (err) {
         console.error(err);
         setTravelers([
-          { _id: "10", name: "Alex Rover", destination: userData.destination, travelStyle: userData.travelStyle, budget: userData.budget, score: 50 }
+          { _id: "10", name: "Alex Rover", destination: userData.destination, travelStyle: userData.travelStyle, budget: userData.budget, score: 75 }
         ]);
       } finally {
         setLoading(false);
@@ -92,6 +101,7 @@ function Dashboard() {
     fetchRecommended();
   }, [userData?._id, userData.destination, userData.travelStyle, userData.budget]);
 
+  // Sync avatar updates
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -102,7 +112,6 @@ function Dashboard() {
         avatar: reader.result
       };
 
-      // Put to database if user is logged in
       if (userData?._id) {
         try {
           await fetch(`${API_BASE}/api/users/${userData._id}`, {
@@ -127,8 +136,11 @@ function Dashboard() {
     reader.readAsDataURL(file);
   };
 
+  // Save travel preferences and trigger dynamic success banner
   const handleSavePreferences = async (e) => {
     e.preventDefault();
+    setAlertMsg(null);
+
     const updatedUser = {
       ...userData,
       destination: prefDest,
@@ -136,10 +148,9 @@ function Dashboard() {
       travelStyle: prefStyle
     };
 
-    // Put to database if user is logged in
     if (userData?._id) {
       try {
-        await fetch(`${API_BASE}/api/users/${userData._id}`, {
+        const res = await fetch(`${API_BASE}/api/users/${userData._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -150,22 +161,43 @@ function Dashboard() {
             avatar: userData.avatar
           })
         });
+        if (res.ok) {
+          setAlertType("success");
+          setAlertMsg("Preferences updated successfully! Match recommendations refreshed. ✅");
+        } else {
+          setAlertType("error");
+          setAlertMsg("Failed to save preference settings. Try again later.");
+        }
       } catch (err) {
         console.error("Database sync error:", err);
+        setAlertType("error");
+        setAlertMsg("Connection failed. Local updates saved.");
       }
+    } else {
+      setAlertType("success");
+      setAlertMsg("Offline mode: Preferences updated in local state successfully.");
     }
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUserData(updatedUser);
-    alert("Preferences updated successfully! Match recommendations refreshed. ✅");
+
+    setTimeout(() => {
+      setAlertMsg(null);
+    }, 4000);
   };
 
+  // Itinerary items checklist handlers
   const addItineraryItem = (e) => {
     e.preventDefault();
     if (!newItineraryItem.trim()) return;
     setItinerary([
       ...itinerary,
-      { id: Date.now(), text: newItineraryItem.trim(), done: false }
+      { 
+        id: Date.now(), 
+        text: newItineraryItem.trim(), 
+        done: false, 
+        category: newItineraryCategory 
+      }
     ]);
     setNewItineraryItem("");
   };
@@ -184,6 +216,7 @@ function Dashboard() {
     navigate("/login");
   };
 
+  // Connections logic
   const fetchConnections = async () => {
     if (!userData?._id) return;
     try {
@@ -287,7 +320,7 @@ function Dashboard() {
         );
       } else {
         return (
-          <span className="badge badge-purple" style={{ padding: "10px 16px", textTransform: "none", fontSize: "0.85rem", fontWeight: "700" }}>
+          <span className="badge badge-purple" style={{ padding: "8px 16px", textTransform: "none", fontSize: "0.85rem", fontWeight: "700" }}>
             🔔 Request Pending
           </span>
         );
@@ -301,12 +334,27 @@ function Dashboard() {
     );
   };
 
+  // Dynamic statistics calculations
+  const calculateProfileStrength = () => {
+    let score = 40; // Base details (Name, Email, password registered)
+    if (userData?.avatar) score += 20;
+    if (userData?.destination) score += 20;
+    if (userData?.budget) score += 10;
+    if (userData?.travelStyle) score += 10;
+    return score;
+  };
+
+  const profileStrength = calculateProfileStrength();
+  const acceptedBuddiesCount = connections.filter(c => c.status === "accepted").length;
+  const doneTasksCount = itinerary.filter(item => item.done).length;
+  const checklistCompletionPercent = itinerary.length > 0 ? Math.round((doneTasksCount / itinerary.length) * 100) : 0;
+
   return (
     <div className="dashboard-container">
       <div className="bg-blob blob-primary" />
       <div className="bg-blob blob-secondary" />
 
-      {/* Main Profile Header Banner */}
+      {/* Profile Header Banner */}
       <section className="profile-banner-card glass-panel">
         <div className="profile-cover-photo">
           <div className="profile-cover-grid"></div>
@@ -366,7 +414,70 @@ function Dashboard() {
         </div>
       </section>
 
-      {/* Dashboard Sub Tabs Navigation */}
+      {/* Interactive Summary Metrics Cards Row */}
+      <ScrollReveal className="dashboard-metrics-grid">
+        {/* Metric 1 */}
+        <TiltCard maxTilt={8}>
+          <div className="metric-card glass-panel" style={{ height: "100%" }}>
+            <div className="metric-icon-box primary">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="metric-info">
+              <span className="metric-title">Profile Strength</span>
+              <span className="metric-value">{profileStrength}%</span>
+            </div>
+          </div>
+        </TiltCard>
+
+        {/* Metric 2 */}
+        <TiltCard maxTilt={8}>
+          <div className="metric-card glass-panel" style={{ height: "100%" }}>
+            <div className="metric-icon-box secondary">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="metric-info">
+              <span className="metric-title">Shared Matches</span>
+              <span className="metric-value">{travelers.length}</span>
+            </div>
+          </div>
+        </TiltCard>
+
+        {/* Metric 3 */}
+        <TiltCard maxTilt={8}>
+          <div className="metric-card glass-panel" style={{ height: "100%" }}>
+            <div className="metric-icon-box purple">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <div className="metric-info">
+              <span className="metric-title">Active Buddies</span>
+              <span className="metric-value">{acceptedBuddiesCount}</span>
+            </div>
+          </div>
+        </TiltCard>
+
+        {/* Metric 4 */}
+        <TiltCard maxTilt={8}>
+          <div className="metric-card glass-panel" style={{ height: "100%" }}>
+            <div className="metric-icon-box yellow">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <div className="metric-info">
+              <span className="metric-title">Planner Tasks</span>
+              <span className="metric-value">{doneTasksCount}/{itinerary.length}</span>
+            </div>
+          </div>
+        </TiltCard>
+      </ScrollReveal>
+
+      {/* Tabs Navigation */}
       <div className="tabs-navigation glass-panel">
         <button
           className={`tab-link ${activeTab === "matches" ? "active" : ""}`}
@@ -399,7 +510,7 @@ function Dashboard() {
 
             {/* Connection Requests Banner */}
             {(() => {
-              const incomingRequests = connections.filter(c => c.receiver._id === userData._id && c.status === "pending");
+              const incomingRequests = connections.filter(c => c.receiver?._id === userData?._id && c.status === "pending");
               if (incomingRequests.length === 0) return null;
               return (
                 <div className="incoming-requests-section glass-panel" style={{ marginBottom: "24px", padding: "20px" }}>
@@ -410,8 +521,8 @@ function Dashboard() {
                     {incomingRequests.map((req) => (
                       <div key={req._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "12px 16px", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.05)" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <div style={{ width: "36px", height: "36px", borderRadius: "50%", overflow: "hidden", background: "var(--primary-glow)", border: "1px solid var(--border-focus)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {req.sender.avatar && req.sender.avatar.startsWith("data:") ? (
+                          <div style={{ width: "36px", height: "36px", borderRadius: "50%", overflow: "hidden", background: "var(--primary-glow)", border: "1px solid var(--border-focus)", display: "flex", alignItems: "center", justifycontent: "center" }}>
+                            {req.sender?.avatar && req.sender.avatar.startsWith("data:") ? (
                               <img src={req.sender.avatar} alt={req.sender.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                             ) : (
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "18px", height: "18px", color: "var(--text-secondary)" }}>
@@ -421,9 +532,9 @@ function Dashboard() {
                             )}
                           </div>
                           <div>
-                            <strong style={{ color: "var(--text-primary)" }}>{req.sender.name}</strong>
+                            <strong style={{ color: "var(--text-primary)" }}>{req.sender?.name || "Explorer"}</strong>
                             <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginLeft: "8px" }}>
-                              Matching in {req.sender.destination}
+                              Matching in {req.sender?.destination}
                             </span>
                           </div>
                         </div>
@@ -479,7 +590,7 @@ function Dashboard() {
             ) : (
               <div className="no-matches-box glass-panel">
                 <h4>No matching users found for this filter combination.</h4>
-                <p>Register more users with matching targets or adjust your preference targets under the "My Preferences" tab.</p>
+                <p>Adjust your preference targets under the "My Preferences" tab.</p>
               </div>
             )}
           </div>
@@ -490,6 +601,15 @@ function Dashboard() {
           <form onSubmit={handleSavePreferences} className="preferences-form glass-panel">
             <h3>Update Your Travel Targets</h3>
             <p className="tab-subtitle">Adjusting these fields will immediately change your recommended match list.</p>
+
+            {alertMsg && (
+              <div className={`dashboard-alert-banner ${alertType}`}>
+                <svg className="dashboard-alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{alertMsg}</span>
+              </div>
+            )}
 
             <div className="form-grid">
               <div className="form-group">
@@ -538,6 +658,20 @@ function Dashboard() {
             <h3>Interactive Trip Planner</h3>
             <p className="tab-subtitle">Keep track of flight bookings, check-ins, and pack checklists.</p>
 
+            {/* Visual Checklist Progress Bar */}
+            <div className="planner-progress-container">
+              <div className="planner-progress-header">
+                <span>Trip Preparation Progress</span>
+                <span>{checklistCompletionPercent}% Complete ({doneTasksCount} of {itinerary.length} items)</span>
+              </div>
+              <div className="planner-progress-bar-bg">
+                <div 
+                  className="planner-progress-fill" 
+                  style={{ width: `${checklistCompletionPercent}%` }} 
+                />
+              </div>
+            </div>
+
             <form onSubmit={addItineraryItem} className="itinerary-form">
               <input
                 type="text"
@@ -545,7 +679,18 @@ function Dashboard() {
                 placeholder="Add checklist item (e.g. Apply for visa, pack solar bank)..."
                 value={newItineraryItem}
                 onChange={(e) => setNewItineraryItem(e.target.value)}
+                required
               />
+              <select
+                className="form-input"
+                value={newItineraryCategory}
+                onChange={(e) => setNewItineraryCategory(e.target.value)}
+              >
+                <option value="general">General</option>
+                <option value="flights">Flights</option>
+                <option value="booking">Booking</option>
+                <option value="packing">Packing</option>
+              </select>
               <button type="submit" className="btn btn-primary">Add Item</button>
             </form>
 
@@ -559,6 +704,14 @@ function Dashboard() {
                       onChange={() => toggleItineraryItem(item.id)}
                     />
                     <span>{item.text}</span>
+                    
+                    {/* Category badge */}
+                    {item.category && (
+                      <span className={`category-pill ${item.category}`}>
+                        {item.category}
+                      </span>
+                    )}
+
                     <button className="delete-item-btn" onClick={() => deleteItineraryItem(item.id)}>
                       🗑
                     </button>
@@ -572,6 +725,8 @@ function Dashboard() {
         )}
 
       </div>
+
+      <AestheticConsole />
     </div>
   );
 }

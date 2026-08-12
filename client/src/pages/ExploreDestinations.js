@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import TiltCard from "../components/TiltCard";
+import ScrollReveal from "../components/ScrollReveal";
+import AestheticConsole from "../components/AestheticConsole";
 import "./ExploreDestinations.css";
 
 function ExploreDestinations() {
@@ -50,10 +53,10 @@ function ExploreDestinations() {
     },
     {
       name: "Reykjavik, Iceland",
-      desc: "Explore geothermal geysers, majestic waterfalls, volcanic sands, and look up at the dancing Aurora Borealis.",
-      img: "https://images.unsplash.com/photo-1520208422220-d12a3c588e6c?auto=format&fit=crop&w=600&q=80",
+      desc: "Explore geothermal geysers, majestic waterfalls, volcanic black sands, and look up at the dancing Aurora Borealis.",
+      img: "https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=600&q=80",
       category: "Mountains",
-      rating: "4.8",
+      rating: "4.9",
       cost: "Standard"
     }
   ];
@@ -78,14 +81,14 @@ function ExploreDestinations() {
       <div className="bg-blob blob-primary" />
       <div className="bg-blob blob-secondary" />
 
-      <div className="explore-header">
+      <ScrollReveal className="explore-header">
         <span className="badge badge-indigo">Curated Escapes</span>
         <h1>Trending Destinations</h1>
         <p>Discover hand-picked places loved by adventure seekers around the globe.</p>
-      </div>
+      </ScrollReveal>
 
       {/* Search & Filter Bar */}
-      <div className="filter-bar glass-panel">
+      <ScrollReveal className="filter-bar glass-panel">
         <div className="search-input-wrapper">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
             <circle cx="11" cy="11" r="8"/>
@@ -110,29 +113,31 @@ function ExploreDestinations() {
             </button>
           ))}
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Destinations Grid */}
-      <div className="destinations-grid">
+      <ScrollReveal className="destinations-grid">
         {filtered.length > 0 ? (
           filtered.map((dest, idx) => (
-            <div className="destination-card glass-panel" key={idx}>
-              <div className="dest-image-wrapper">
-                <img src={dest.img} alt={dest.name} loading="lazy" />
-                <span className="category-badge">{dest.category}</span>
-                <span className="rating-badge">★ {dest.rating}</span>
-              </div>
-              <div className="dest-content">
-                <h3>{dest.name}</h3>
-                <p>{dest.desc}</p>
-                <div className="dest-footer">
-                  <span className="cost-indicator">Cost: <strong>{dest.cost}</strong></span>
-                  <button className="btn btn-primary btn-sm" onClick={() => handlePlanTrip(dest.name)}>
-                    Find Buddies
-                  </button>
+            <TiltCard key={idx} maxTilt={8}>
+              <div className="destination-card glass-panel" style={{ height: "100%" }}>
+                <div className="dest-image-wrapper">
+                  <img src={dest.img} alt={dest.name} loading="lazy" />
+                  <span className="category-badge">{dest.category}</span>
+                  <span className="rating-badge">★ {dest.rating}</span>
+                </div>
+                <div className="dest-content">
+                  <h3>{dest.name}</h3>
+                  <p>{dest.desc}</p>
+                  <div className="dest-footer">
+                    <span className="cost-indicator">Cost: <strong>{dest.cost}</strong></span>
+                    <button className="btn btn-primary btn-sm" onClick={() => handlePlanTrip(dest.name)}>
+                      Find Buddies
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </TiltCard>
           ))
         ) : (
           <div className="no-destinations glass-panel">
@@ -140,7 +145,9 @@ function ExploreDestinations() {
             <p>Try refining your search query or choosing another category.</p>
           </div>
         )}
-      </div>
+      </ScrollReveal>
+
+      <AestheticConsole />
     </div>
   );
 }

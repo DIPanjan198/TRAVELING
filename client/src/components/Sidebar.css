@@ -158,6 +158,18 @@
   color: var(--primary-light);
 }
 
+.sidebar-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--accent, #6366f1) 0%, var(--accent-2, #10b981) 100%);
+  box-shadow: 0 0 10px var(--glow, rgba(99, 102, 241, 0.3));
+}
+
 .sidebar-link svg {
   opacity: 0.7;
   flex-shrink: 0;

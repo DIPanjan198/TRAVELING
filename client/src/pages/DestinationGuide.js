@@ -67,6 +67,14 @@ const DESTINATIONS = [
     highlights: ["Marina Bay Sands", "Gardens by the Bay", "Sentosa Island", "Hawker Centres"],
     temp: "25–33°C", type: "Modern"
   },
+  {
+    name: "Reykjavik", country: "Iceland", emoji: "🌋", tag: "Adventure", bestTime: "Sep–Mar (Aurora), Jun–Aug (Midnight Sun)",
+    budget: "₹8,000–20,000/day", language: "Icelandic / English", currency: "ISK (kr)",
+    visa: "Schengen Visa required for Indians", safetyRating: 5, crowdLevel: "Medium",
+    desc: "Land of fire and ice. Geothermal hot springs, massive glaciers, black sand volcanic beaches, and the dancing Northern Lights.",
+    highlights: ["Blue Lagoon", "Golden Circle", "Reynisfjara Black Beach", "Northern Lights Tour"],
+    temp: "-2 to 15°C", type: "Adventure"
+  }
 ];
 
 const TYPES = ["All", "Beach", "Mountains", "Culture", "Budget", "Luxury", "Modern", "Adventure"];
