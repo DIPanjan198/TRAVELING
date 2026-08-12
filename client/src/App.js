@@ -22,7 +22,6 @@ import WeatherCheck from "./pages/WeatherCheck";
 import TripCost from "./pages/TripCost";
 import TravelQuiz from "./pages/TravelQuiz";
 import DestinationGuide from "./pages/DestinationGuide";
-import PrivacySecurity from "./pages/PrivacySecurity";
 import { io } from "socket.io-client";
 import { API_BASE } from "./utils/api";
 import "./App.css";
@@ -235,10 +234,6 @@ function App() {
               <Route path="/trip-cost" element={<TripCost />} />
               <Route path="/travel-quiz" element={<TravelQuiz />} />
               <Route path="/destination-guide" element={<DestinationGuide />} />
-              <Route path="/privacy" element={<PrivacySecurity />} />
-              <Route path="/security" element={<PrivacySecurity />} />
-              <Route path="/terms" element={<PrivacySecurity />} />
-              <Route path="/help" element={<PrivacySecurity />} />
               
               <Route 
                 path="/find-buddies" 

@@ -53,6 +53,7 @@ function Chat() {
       }
     };
     if (currentUser) loadChatData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?._id]);
 
   // Derived accepted buddies
@@ -119,6 +120,7 @@ function Chat() {
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, currentUser?._id, activeBuddy?._id, isConnected]);
 
   // Auto scroll messages to bottom

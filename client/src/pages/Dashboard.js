@@ -99,6 +99,7 @@ function Dashboard() {
       }
     };
     fetchRecommended();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData?._id, userData.destination, userData.travelStyle, userData.budget]);
 
   // Sync avatar updates
