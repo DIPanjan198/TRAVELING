@@ -30,15 +30,17 @@ app.use(express.json());
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbuddy";
 
+console.log("Attempting MongoDB Connection to:", MONGO_URI.replace(/:([^@]+)@/, ":****@"));
+
 mongoose
   .connect(MONGO_URI, {
     serverSelectionTimeoutMS: 10000,
   })
-  .then(() => console.log(`MongoDB Connected successfully to ${MONGO_URI}`))
+  .then(() => console.log(`MongoDB Connected successfully!`))
   .catch((err) => {
     console.error("MongoDB Connection Error:");
-    console.error("If you are using MongoDB Atlas, ensure your IP is whitelisted and the user credentials are correct.");
-    console.error(err);
+    console.error("If using MongoDB Atlas, verify IP Whitelist (0.0.0.0/0) and credentials.");
+    console.error(err.message);
   });
 
 const UserSchema = new mongoose.Schema({
