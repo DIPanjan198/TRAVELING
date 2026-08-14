@@ -337,23 +337,28 @@
   line-height: 1.7;
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
   .matching-container {
-    padding: 80px 16px 60px;
-    gap: 28px;
+    padding: 20px 16px 40px;
+    gap: 20px;
   }
 
   .preference-profile {
-    padding: 24px 20px;
+    padding: 20px 16px;
+    gap: 14px;
+  }
+
+  .pref-tag {
+    padding: 8px 14px;
+    font-size: 0.85rem;
   }
 
   .matches-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 
   .no-matches-panel {
-    padding: 40px 20px;
+    padding: 32px 16px;
   }
 }

@@ -5,7 +5,7 @@
 .es-page {
   position: relative;
   min-height: 100vh;
-  padding: 80px 0 120px;
+  padding: 20px 0 60px;
   overflow: hidden;
 }
 
@@ -399,11 +399,13 @@
 
 /* Responsive */
 @media (max-width: 860px) {
-  .es-grid { grid-template-columns: 1fr; gap: 24px; }
+  .es-container { padding: 0 16px; gap: 20px; }
+  .es-grid { grid-template-columns: 1fr; gap: 20px; }
+  .es-card { padding: 20px 16px; }
 }
 
 @media (max-width: 480px) {
-  .es-container { padding: 0 20px; }
-  .es-card { padding: 28px 20px; }
+  .es-container { padding: 0 12px; }
+  .es-card { padding: 16px 14px; }
   .es-row2 { grid-template-columns: 1fr; gap: 12px; }
 }

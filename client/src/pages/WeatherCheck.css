@@ -5,7 +5,7 @@
 .wc-page {
   position: relative;
   min-height: 100vh;
-  padding: 80px 0 120px;
+  padding: 20px 0 60px;
   overflow: hidden;
 }
 
@@ -341,32 +341,33 @@
 /* Responsiveness */
 @media (max-width: 768px) {
   .wc-container {
-    padding: 0 20px;
-    gap: 28px;
+    padding: 0 16px;
+    gap: 20px;
   }
   .wc-stats {
     grid-template-columns: repeat(2, 1fr);
   }
   .wc-forecast-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .wc-cta {
     flex-direction: column;
     text-align: center;
-    padding: 24px;
+    padding: 20px 16px;
   }
 }
 
 @media (max-width: 480px) {
   .wc-forecast-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
   .wc-current {
     flex-direction: column;
     text-align: center;
-    gap: 20px;
+    gap: 16px;
   }
   .wc-main {
-    padding: 24px;
+    padding: 20px 16px;
   }
 }

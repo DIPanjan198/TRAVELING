@@ -643,20 +643,20 @@
 
 @media (max-width: 768px) {
   .dashboard-container {
-    gap: 20px;
-    padding-top: 84px;
+    gap: 16px;
+    padding-top: 16px;
   }
   .profile-banner-card {
-    padding: 0 20px 24px 20px;
+    padding: 0 16px 20px 16px;
   }
   .profile-cover-photo {
-    height: 110px;
-    margin: 0 -20px 0 -20px;
+    height: 100px;
+    margin: 0 -16px 0 -16px;
   }
   .profile-avatar-wrapper {
-    margin-top: -44px;
-    width: 86px;
-    height: 86px;
+    margin-top: -40px;
+    width: 80px;
+    height: 80px;
   }
   .profile-banner-header {
     justify-content: center;
@@ -670,22 +670,45 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    gap: 10px;
   }
   .profile-overview-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     text-align: center;
   }
   .dashboard-metrics-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .tabs-navigation {
-    flex-direction: column;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .tab-btn {
+    white-space: nowrap;
+    padding: 8px 14px;
+    font-size: 0.88rem;
+    flex-shrink: 0;
   }
   .itinerary-form {
     flex-direction: column;
   }
   .preferences-form, .itinerary-builder {
-    padding: 24px 20px;
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-overview-row {
+    grid-template-columns: 1fr;
   }
 }

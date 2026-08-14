@@ -5,7 +5,7 @@
 .atp-page {
   position: relative;
   min-height: 100vh;
-  padding: 80px 0 120px;
+  padding: 20px 0 60px;
   overflow: hidden;
 }
 
@@ -342,14 +342,14 @@
 
 /* Responsiveness */
 @media (max-width: 768px) {
-  .atp-container { padding: 0 20px; }
-  .atp-form { padding: 28px 24px; }
-  .atp-form-grid { grid-template-columns: 1fr; gap: 16px; }
-  .atp-checklist-wrap { padding: 28px 24px; }
-  .atp-dest-grid { grid-template-columns: repeat(3, 1fr); }
+  .atp-container { padding: 0 16px; gap: 24px; }
+  .atp-form { padding: 20px 16px; }
+  .atp-form-grid { grid-template-columns: 1fr; gap: 14px; }
+  .atp-checklist-wrap { padding: 20px 16px; }
+  .atp-dest-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .atp-checklist-header { flex-direction: column-reverse; align-items: flex-start; gap: 14px; }
 }
 
 @media (max-width: 480px) {
-  .atp-dest-grid { grid-template-columns: repeat(2, 1fr); }
+  .atp-dest-grid { grid-template-columns: 1fr; }
 }

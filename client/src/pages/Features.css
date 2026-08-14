@@ -13,7 +13,7 @@
 /* ── Hero Header ── */
 .features-hero {
   text-align: center;
-  padding: 80px 40px 60px;
+  padding: 20px 24px 40px;
   position: relative;
   animation: fadeUp 0.8s cubic-bezier(0.4,0,0.2,1) both;
 }
@@ -389,23 +389,34 @@
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .features-hero {
-    padding: 60px 24px 40px;
+    padding: 20px 16px 30px;
   }
 
   .features-main-section,
   .how-it-works-section,
   .comparison-section {
-    padding: 0 20px;
+    padding: 0 16px;
   }
 
   .features-cards-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+  }
+
+  .comparison-table {
+    min-width: 540px;
   }
 
   .features-cta-banner {
-    padding: 40px 24px;
-    margin-left: 20px;
-    margin-right: 20px;
+    padding: 30px 16px;
+    margin-left: 16px;
+    margin-right: 16px;
   }
 
   .steps-timeline::before {
@@ -413,6 +424,6 @@
   }
 
   .step-item {
-    padding: 20px 20px;
+    padding: 16px;
   }
 }

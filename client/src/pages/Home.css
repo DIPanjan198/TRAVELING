@@ -787,28 +787,36 @@
 
 @media (max-width: 768px) {
   .home-container {
-    padding: 72px 20px 80px;
-    gap: 72px;
+    padding: 24px 16px 60px;
+    gap: 48px;
   }
   .matcher-inputs {
     grid-template-columns: 1fr;
     gap: 14px;
   }
   .matcher-card {
-    padding: 28px 20px;
+    padding: 24px 16px;
   }
   .hero-content h1 {
-    font-size: 2.2rem;
+    font-size: clamp(2rem, 7.5vw, 2.8rem);
   }
   .about-col-left,
   .about-col-right {
-    padding: 24px;
+    padding: 20px 16px;
   }
   .features-container {
     grid-template-columns: 1fr;
   }
   .stats-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .scroll-to-top-btn {
+    right: 16px;
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+  .theme-console-wrapper {
+    right: 16px;
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
   }
 }
 

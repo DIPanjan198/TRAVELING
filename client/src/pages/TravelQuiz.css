@@ -6,7 +6,7 @@
 .tq-page {
   position: relative;
   min-height: 100vh;
-  padding: 80px 0 120px;
+  padding: 20px 0 60px;
   overflow: hidden;
 }
 
@@ -472,7 +472,7 @@
 }
 
 @media (max-width: 768px) {
-  .dg-container, .tq-container { padding: 0 20px; }
-  .dg-grid { grid-template-columns: 1fr; }
-  .tq-quiz { padding: 28px 20px; }
+  .dg-container, .tq-container { padding: 0 16px; gap: 20px; }
+  .dg-grid { grid-template-columns: 1fr; gap: 16px; }
+  .tq-quiz { padding: 20px 16px; }
 }
