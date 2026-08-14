@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { API_BASE } from "../utils/api";
+import { API_BASE, fetchWithTimeout, createDemoUser } from "../utils/api";
 import TiltCard from "../components/TiltCard";
 import AestheticConsole from "../components/AestheticConsole";
 import "./Auth.css";
@@ -12,6 +12,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isConnectionError, setIsConnectionError] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [animationClass, setAnimationClass] = useState("slide-in-right");
 
@@ -25,6 +26,7 @@ function Login() {
   const handleNextStep = (e) => {
     e?.preventDefault();
     setError(null);
+    setIsConnectionError(false);
     setEmailInvalid(false);
 
     if (!email) {
@@ -45,13 +47,22 @@ function Login() {
 
   const handleBackStep = () => {
     setError(null);
+    setIsConnectionError(false);
     setAnimationClass("slide-in-left");
     setStep(1);
+  };
+
+  const handleDemoLogin = () => {
+    const demoUser = createDemoUser(email || "dipanjan2026@gmail.com");
+    localStorage.setItem("user", JSON.stringify(demoUser));
+    localStorage.setItem("isLoggedIn", "true");
+    navigate("/dashboard");
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsConnectionError(false);
 
     if (!password) {
       setError("Enter your password");
@@ -60,11 +71,11 @@ function Login() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/login`, {
+      const res = await fetchWithTimeout(`${API_BASE}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      });
+      }, 10000);
 
       const data = await res.json();
       if (!res.ok) {
@@ -78,7 +89,8 @@ function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      setError("Connection error. Check that backend server is active.");
+      setIsConnectionError(true);
+      setError("Backend server is offline or waking up. Retry or continue in demo mode.");
     } finally {
       setLoading(false);
     }
@@ -197,11 +209,22 @@ function Login() {
                 </div>
 
                 {error && (
-                  <div className="google-error-message">
-                    <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <span>{error}</span>
+                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                    {isConnectionError && (
+                      <button 
+                        type="button" 
+                        className="demo-fallback-btn" 
+                        onClick={handleDemoLogin}
+                      >
+                        ⚡ Continue as Demo User
+                      </button>
+                    )}
                   </div>
                 )}
 

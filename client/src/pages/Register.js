@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { API_BASE } from "../utils/api";
+import { API_BASE, fetchWithTimeout, createDemoUser } from "../utils/api";
 import TiltCard from "../components/TiltCard";
 import AestheticConsole from "../components/AestheticConsole";
 import "./Auth.css";
@@ -25,6 +25,7 @@ function Register() {
   // UI States
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isConnectionError, setIsConnectionError] = useState(false);
   const [success, setSuccess] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -60,6 +61,7 @@ function Register() {
 
   const handleNextStep = () => {
     setError(null);
+    setIsConnectionError(false);
     setEmailInvalid(false);
     setPasswordMismatch(false);
 
@@ -97,12 +99,30 @@ function Register() {
 
   const handleBackStep = () => {
     setError(null);
+    setIsConnectionError(false);
     setAnimationClass("slide-in-left");
     setStep(1);
   };
 
+  const handleDemoRegister = () => {
+    const fullName = `${firstName.trim() || "Dipanjan"} ${lastName.trim() || "User"}`;
+    const demoUser = {
+      _id: "demo_" + Math.random().toString(36).substr(2, 9),
+      name: fullName,
+      email: email || "dipanjan2026@gmail.com",
+      destination: destination || "Goa",
+      budget: budget || "Medium",
+      travelStyle: travelStyle || "Adventure",
+      avatar: ""
+    };
+    localStorage.setItem("user", JSON.stringify(demoUser));
+    localStorage.setItem("isLoggedIn", "true");
+    navigate("/dashboard");
+  };
+
   const handleRegister = async () => {
     setError(null);
+    setIsConnectionError(false);
 
     if (!destination.trim()) {
       setError("Enter your dream destination");
@@ -123,7 +143,7 @@ function Register() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/register`, {
+      const res = await fetchWithTimeout(`${API_BASE}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -135,7 +155,7 @@ function Register() {
           travelStyle,
           avatar: "",
         }),
-      });
+      }, 10000);
 
       const data = await res.json();
       if (res.ok) {
@@ -148,7 +168,8 @@ function Register() {
       }
     } catch (err) {
       console.error(err);
-      setError("Server connection failed. Try again shortly.");
+      setIsConnectionError(true);
+      setError("Server connection failed or waking up. Retry or proceed in demo mode.");
     } finally {
       setLoading(false);
     }
@@ -397,11 +418,22 @@ function Register() {
                 </div>
 
                 {error && (
-                  <div className="google-error-message">
-                    <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <span>{error}</span>
+                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                    {isConnectionError && (
+                      <button 
+                        type="button" 
+                        className="demo-fallback-btn" 
+                        onClick={handleDemoRegister}
+                      >
+                        ⚡ Continue as Demo User
+                      </button>
+                    )}
                   </div>
                 )}
 

@@ -10,19 +10,15 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://traveling-lac.vercel.app", "https://aerotravel-sigma.vercel.app"],
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://traveling-lac.vercel.app",
-      "https://aerotravel-sigma.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
   })
 );
