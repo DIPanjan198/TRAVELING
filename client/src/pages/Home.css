@@ -812,7 +812,7 @@
   }
   .scroll-to-top-btn {
     right: 16px;
-    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(136px + env(safe-area-inset-bottom, 0px));
   }
   .theme-console-wrapper {
     right: 16px;
@@ -913,10 +913,10 @@
 }
 
 /* ── Media Queries for Responsiveness ── */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .scroll-to-top-btn {
     right: 16px;
-    bottom: 16px;
+    bottom: calc(136px + env(safe-area-inset-bottom, 0px));
   }
 }
 

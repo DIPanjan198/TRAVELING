@@ -36,10 +36,10 @@ function Dashboard() {
 
   // Itinerary items list with categories
   const [itinerary, setItinerary] = useState([
-    { id: 1, text: "Book flight tickets", done: true, category: "flights" },
-    { id: 2, text: "Check hotel bookings & ratings", done: false, category: "booking" },
-    { id: 3, text: "Pack hiking boots & rain jackets", done: false, category: "packing" },
-    { id: 4, text: "Convert currency & activate card", done: false, category: "general" }
+    { id: 1, text: "Book flight tickets ✈️", done: true, category: "flights" },
+    { id: 2, text: "Check hotel bookings & ratings 🏨", done: false, category: "booking" },
+    { id: 3, text: "Pack hiking boots & rain jackets 🎒", done: false, category: "packing" },
+    { id: 4, text: "Convert currency & activate travel card 💱", done: false, category: "general" }
   ]);
   const [newItineraryItem, setNewItineraryItem] = useState("");
   const [newItineraryCategory, setNewItineraryCategory] = useState("general");
@@ -52,8 +52,10 @@ function Dashboard() {
         if (!userData?._id) {
           // If no user ID, load fallback data
           setTravelers([
-            { _id: "1", name: "Rahul", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 100 },
-            { _id: "4", name: "Sara", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 100 }
+            { _id: "1", name: "Rahul Sharma", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 98 },
+            { _id: "4", name: "Sara Jenkins", destination: userData.destination || "Goa", travelStyle: "Adventure", budget: "Medium", score: 95 },
+            { _id: "5", name: "Michael Chen", destination: userData.destination || "Goa", travelStyle: "Backpacking", budget: "Medium", score: 88 },
+            { _id: "6", name: "Chloe Bennett", destination: userData.destination || "Goa", travelStyle: "Luxury", budget: "High", score: 82 }
           ]);
           return;
         }
@@ -80,7 +82,7 @@ function Dashboard() {
                 userData.travelStyle &&
                 traveler.travelStyle.toLowerCase() === userData.travelStyle.toLowerCase()
               ) {
-                score += 25;
+                score += 23;
               }
               return { ...traveler, score };
             })
@@ -92,7 +94,7 @@ function Dashboard() {
       } catch (err) {
         console.error(err);
         setTravelers([
-          { _id: "10", name: "Alex Rover", destination: userData.destination, travelStyle: userData.travelStyle, budget: userData.budget, score: 75 }
+          { _id: "10", name: "Alex Rover", destination: userData.destination || "Bali", travelStyle: userData.travelStyle || "Adventure", budget: userData.budget || "Medium", score: 92 }
         ]);
       } finally {
         setLoading(false);
@@ -164,19 +166,19 @@ function Dashboard() {
         });
         if (res.ok) {
           setAlertType("success");
-          setAlertMsg("Preferences updated successfully! Match recommendations refreshed. ✅");
+          setAlertMsg("Preferences updated! Matches refreshed. ✨");
         } else {
           setAlertType("error");
-          setAlertMsg("Failed to save preference settings. Try again later.");
+          setAlertMsg("Failed to save preference settings. Try again.");
         }
       } catch (err) {
         console.error("Database sync error:", err);
         setAlertType("error");
-        setAlertMsg("Connection failed. Local updates saved.");
+        setAlertMsg("Connection issue. Local preferences updated.");
       }
     } else {
       setAlertType("success");
-      setAlertMsg("Offline mode: Preferences updated in local state successfully.");
+      setAlertMsg("Preferences updated successfully! ✨");
     }
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -306,8 +308,8 @@ function Dashboard() {
 
     if (connState.status === "none") {
       return (
-        <button className="btn btn-primary" onClick={() => handleConnectRequest(traveler._id)}>
-          Connect
+        <button className="genz-btn genz-btn-primary" onClick={() => handleConnectRequest(traveler._id)}>
+          Connect ⚡
         </button>
       );
     }
@@ -315,13 +317,13 @@ function Dashboard() {
     if (connState.status === "pending") {
       if (connState.isSender) {
         return (
-          <button className="btn btn-glass" style={{ opacity: 0.7, cursor: "not-allowed" }} disabled>
-            Sent Pending
+          <button className="genz-btn genz-btn-disabled" disabled>
+            Sent ⏳
           </button>
         );
       } else {
         return (
-          <span className="badge badge-purple" style={{ padding: "8px 16px", textTransform: "none", fontSize: "0.85rem", fontWeight: "700" }}>
+          <span className="genz-badge genz-badge-purple">
             🔔 Request Pending
           </span>
         );
@@ -329,15 +331,15 @@ function Dashboard() {
     }
 
     return (
-      <button className="btn btn-primary" onClick={() => navigate(`/chat/${traveler._id}`)}>
-        Chat & Plan
+      <button className="genz-btn genz-btn-emerald" onClick={() => navigate(`/chat/${traveler._id}`)}>
+        Chat & Plan 💬
       </button>
     );
   };
 
   // Dynamic statistics calculations
   const calculateProfileStrength = () => {
-    let score = 40; // Base details (Name, Email, password registered)
+    let score = 40;
     if (userData?.avatar) score += 20;
     if (userData?.destination) score += 20;
     if (userData?.budget) score += 10;
@@ -350,380 +352,387 @@ function Dashboard() {
   const doneTasksCount = itinerary.filter(item => item.done).length;
   const checklistCompletionPercent = itinerary.length > 0 ? Math.round((doneTasksCount / itinerary.length) * 100) : 0;
 
-  return (
-    <div className="dashboard-container">
-      <div className="bg-blob blob-primary" />
-      <div className="bg-blob blob-secondary" />
+  const quickTools = [
+    { title: "Expense Splitter", icon: "💸", desc: "Split costs & bills", path: "/expense-splitter", color: "emerald" },
+    { title: "Weather Check", icon: "☀️", desc: "Live forecast vibe", path: "/weather-check", color: "yellow" },
+    { title: "Currency Swap", icon: "💱", desc: "Live exchange rate", path: "/currency-converter", color: "indigo" },
+    { title: "AI Trip Planner", icon: "🤖", desc: "Generate custom itinerary", path: "/ai-trip-planner", color: "purple" },
+    { title: "Packing List", icon: "🎒", desc: "Smart gear checklist", path: "/packing-list", color: "rose" },
+    { title: "Travel Journal", icon: "📖", desc: "Capture trip memories", path: "/travel-journal", color: "cyan" }
+  ];
 
-      {/* Profile Header Banner */}
-      <section className="profile-banner-card glass-panel">
-        <div className="profile-cover-photo">
-          <div className="profile-cover-grid"></div>
-          <div className="profile-cover-glow"></div>
-        </div>
-        <div className="profile-banner-header">
-          <label className="profile-avatar-wrapper">
+  return (
+    <div className="genz-dashboard-container">
+      {/* Gen-Z Profile Vibe Hero Card */}
+      <section className="genz-hero-card">
+        <div className="genz-hero-header">
+          <label className="genz-avatar-wrapper" title="Click to upload profile photo">
             {userData?.avatar && userData.avatar.startsWith("data:") ? (
-              <img
-                src={userData.avatar}
-                alt="Profile Avatar"
-                className="dashboard-avatar"
-              />
+              <img src={userData.avatar} alt="Profile Avatar" className="genz-avatar-img" />
             ) : (
-              <div className="dashboard-avatar-placeholder">
+              <div className="genz-avatar-placeholder">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </div>
             )}
-            <div className="edit-avatar-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </div>
+            <div className="genz-avatar-edit-overlay">📷</div>
             <input type="file" accept="image/*" hidden onChange={handleAvatarChange} />
           </label>
 
-          <div className="profile-banner-text">
-            <h2>{userData?.name || "Explorer"}</h2>
-            <p>Member Status: <span className="badge badge-emerald">Verified Explorer</span></p>
+          <div className="genz-hero-info">
+            <div className="genz-hero-title-row">
+              <h2>Hey, {userData?.name || "Explorer"}! 👋</h2>
+              <span className="genz-status-badge">🟢 Online & Ready</span>
+            </div>
+            <p className="genz-hero-subtitle">Targeting <strong>{userData.destination || "Anywhere"}</strong> with a <strong>{userData.budget || "Flexible"}</strong> budget and <strong>{userData.travelStyle || "Adventure"}</strong> vibe.</p>
+            <div className="genz-tags-row">
+              <span className="genz-tag tag-indigo">📍 {userData.destination || "Goa"}</span>
+              <span className="genz-tag tag-emerald">💰 {userData.budget || "Medium"}</span>
+              <span className="genz-tag tag-purple">🎒 {userData.travelStyle || "Adventure"}</span>
+            </div>
           </div>
 
-          <div className="profile-banner-actions">
-            <button className="btn btn-glass" onClick={logout}>
+          <div className="genz-hero-actions">
+            <button className="genz-btn genz-btn-glass" onClick={logout}>
               Sign Out
             </button>
           </div>
         </div>
-
-        {/* Global overview tags */}
-        <div className="profile-overview-row">
-          <div className="overview-item">
-            <span>📍 Destination</span>
-            <h4>{userData.destination || "None"}</h4>
-          </div>
-          <div className="overview-item">
-            <span>💰 Budget</span>
-            <h4>{userData.budget || "None"}</h4>
-          </div>
-          <div className="overview-item">
-            <span>🎒 Travel Vibe</span>
-            <h4>{userData.travelStyle || "None"}</h4>
-          </div>
-        </div>
       </section>
 
-      {/* Interactive Summary Metrics Cards Row */}
-      <ScrollReveal className="dashboard-metrics-grid">
-        {/* Metric 1 */}
-        <TiltCard maxTilt={8}>
-          <div className="metric-card glass-panel" style={{ height: "100%" }}>
-            <div className="metric-icon-box primary">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="metric-info">
-              <span className="metric-title">Profile Strength</span>
-              <span className="metric-value">{profileStrength}%</span>
+      {/* Vibe Stats Grid */}
+      <ScrollReveal className="genz-stats-grid">
+        <TiltCard maxTilt={6}>
+          <div className="genz-stat-card">
+            <div className="genz-stat-icon icon-indigo">⚡</div>
+            <div className="genz-stat-info">
+              <span className="genz-stat-label">Profile Strength</span>
+              <span className="genz-stat-val">{profileStrength}%</span>
             </div>
           </div>
         </TiltCard>
 
-        {/* Metric 2 */}
-        <TiltCard maxTilt={8}>
-          <div className="metric-card glass-panel" style={{ height: "100%" }}>
-            <div className="metric-icon-box secondary">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <div className="metric-info">
-              <span className="metric-title">Shared Matches</span>
-              <span className="metric-value">{travelers.length}</span>
+        <TiltCard maxTilt={6}>
+          <div className="genz-stat-card">
+            <div className="genz-stat-icon icon-emerald">🔥</div>
+            <div className="genz-stat-info">
+              <span className="genz-stat-label">Vibe Matches</span>
+              <span className="genz-stat-val">{travelers.length}</span>
             </div>
           </div>
         </TiltCard>
 
-        {/* Metric 3 */}
-        <TiltCard maxTilt={8}>
-          <div className="metric-card glass-panel" style={{ height: "100%" }}>
-            <div className="metric-icon-box purple">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <div className="metric-info">
-              <span className="metric-title">Active Buddies</span>
-              <span className="metric-value">{acceptedBuddiesCount}</span>
+        <TiltCard maxTilt={6}>
+          <div className="genz-stat-card">
+            <div className="genz-stat-icon icon-purple">💬</div>
+            <div className="genz-stat-info">
+              <span className="genz-stat-label">Active Buddies</span>
+              <span className="genz-stat-val">{acceptedBuddiesCount}</span>
             </div>
           </div>
         </TiltCard>
 
-        {/* Metric 4 */}
-        <TiltCard maxTilt={8}>
-          <div className="metric-card glass-panel" style={{ height: "100%" }}>
-            <div className="metric-icon-box yellow">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
-            <div className="metric-info">
-              <span className="metric-title">Planner Tasks</span>
-              <span className="metric-value">{doneTasksCount}/{itinerary.length}</span>
+        <TiltCard maxTilt={6}>
+          <div className="genz-stat-card">
+            <div className="genz-stat-icon icon-rose">📝</div>
+            <div className="genz-stat-info">
+              <span className="genz-stat-label">Hype Checklist</span>
+              <span className="genz-stat-val">{doneTasksCount}/{itinerary.length}</span>
             </div>
           </div>
         </TiltCard>
       </ScrollReveal>
 
-      {/* Tabs Navigation */}
-      <div className="tabs-navigation glass-panel">
-        <button
-          className={`tab-link ${activeTab === "matches" ? "active" : ""}`}
-          onClick={() => setActiveTab("matches")}
-        >
-          My Matches
-        </button>
-        <button
-          className={`tab-link ${activeTab === "preferences" ? "active" : ""}`}
-          onClick={() => setActiveTab("preferences")}
-        >
-          My Preferences
-        </button>
-        <button
-          className={`tab-link ${activeTab === "itinerary" ? "active" : ""}`}
-          onClick={() => setActiveTab("itinerary")}
-        >
-          Trip Planner
-        </button>
-      </div>
-
-      {/* Tab Contents */}
-      <div className="tab-content-panel">
-        
-        {/* Tab 1: Matches */}
-        {activeTab === "matches" && (
-          <div className="tab-matches">
-            <h3>Travelers Matching Your Vibe</h3>
-            <p className="tab-subtitle">Based on your shared destination, budget limit, and backpacking styles.</p>
-
-            {/* Connection Requests Banner */}
-            {(() => {
-              const incomingRequests = connections.filter(c => c.receiver?._id === userData?._id && c.status === "pending");
-              if (incomingRequests.length === 0) return null;
-              return (
-                <div className="incoming-requests-section glass-panel" style={{ marginBottom: "24px", padding: "20px" }}>
-                  <h4 style={{ color: "var(--secondary-light)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span>🔔</span> Connection Requests ({incomingRequests.length})
-                  </h4>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {incomingRequests.map((req) => (
-                      <div key={req._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "12px 16px", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <div style={{ width: "36px", height: "36px", borderRadius: "50%", overflow: "hidden", background: "var(--primary-glow)", border: "1px solid var(--border-focus)", display: "flex", alignItems: "center", justifycontent: "center" }}>
-                            {req.sender?.avatar && req.sender.avatar.startsWith("data:") ? (
-                              <img src={req.sender.avatar} alt={req.sender.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                            ) : (
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "18px", height: "18px", color: "var(--text-secondary)" }}>
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                              </svg>
-                            )}
-                          </div>
-                          <div>
-                            <strong style={{ color: "var(--text-primary)" }}>{req.sender?.name || "Explorer"}</strong>
-                            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginLeft: "8px" }}>
-                              Matching in {req.sender?.destination}
-                            </span>
-                          </div>
-                        </div>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <button className="btn btn-emerald" onClick={() => handleAcceptConnection(req._id)} style={{ padding: "6px 12px", fontSize: "0.85rem" }}>
-                            Accept
-                          </button>
-                          <button className="btn btn-red" onClick={() => handleDeclineConnection(req._id)} style={{ padding: "6px 12px", fontSize: "0.85rem" }}>
-                            Decline
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {loading ? (
-              <div className="loader-box">
-                <div className="spinner"></div>
-                <p>Retrieving matching users...</p>
-              </div>
-            ) : travelers.length > 0 ? (
-              <div className="matches-list-grid">
-                {travelers.map((traveler) => (
-                  <div className="match-card-detailed glass-panel" key={traveler._id}>
-                    <div className="match-avatar">
-                      {traveler.avatar && traveler.avatar.startsWith("data:") ? (
-                        <img src={traveler.avatar} alt={traveler.name} />
-                      ) : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="match-body">
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <h4>{traveler.name}</h4>
-                        <span className="badge badge-indigo" style={{ fontSize: "0.75rem", padding: "2px 6px" }}>{traveler.score}% Match</span>
-                      </div>
-                      <div className="match-tags">
-                        <span className="badge badge-indigo">📍 {traveler.destination || "Anywhere"}</span>
-                        <span className="badge badge-emerald">💰 {traveler.budget || "Medium"}</span>
-                        <span className="badge badge-purple">🎒 {traveler.travelStyle || "Flexible"}</span>
-                      </div>
-                    </div>
-                    {renderConnectButton(traveler)}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-matches-box glass-panel">
-                <h4>No matching users found for this filter combination.</h4>
-                <p>Adjust your preference targets under the "My Preferences" tab.</p>
-              </div>
-            )}
+      {/* Gen-Z Bento Grid Layout */}
+      <div className="genz-bento-layout">
+        {/* Left Column: Matches & Checklist */}
+        <div className="genz-bento-main">
+          
+          {/* Tab Selection */}
+          <div className="genz-tabs-bar">
+            <button
+              className={`genz-tab-btn ${activeTab === "matches" ? "active" : ""}`}
+              onClick={() => setActiveTab("matches")}
+            >
+              🔥 Top Vibe Matches ({travelers.length})
+            </button>
+            <button
+              className={`genz-tab-btn ${activeTab === "itinerary" ? "active" : ""}`}
+              onClick={() => setActiveTab("itinerary")}
+            >
+              ✨ Trip Hype Checklist ({doneTasksCount}/{itinerary.length})
+            </button>
+            <button
+              className={`genz-tab-btn ${activeTab === "preferences" ? "active" : ""}`}
+              onClick={() => setActiveTab("preferences")}
+            >
+              🎯 Update Vibe Targets
+            </button>
           </div>
-        )}
 
-        {/* Tab 2: Preferences Form */}
-        {activeTab === "preferences" && (
-          <form onSubmit={handleSavePreferences} className="preferences-form glass-panel">
-            <h3>Update Your Travel Targets</h3>
-            <p className="tab-subtitle">Adjusting these fields will immediately change your recommended match list.</p>
-
-            {alertMsg && (
-              <div className={`dashboard-alert-banner ${alertType}`}>
-                <svg className="dashboard-alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{alertMsg}</span>
+          {/* Incoming Connection Requests Banner */}
+          {(() => {
+            const incomingRequests = connections.filter(c => c.receiver?._id === userData?._id && c.status === "pending");
+            if (incomingRequests.length === 0) return null;
+            return (
+              <div className="genz-card genz-requests-card">
+                <div className="genz-card-header">
+                  <h4>🔔 Connection Requests ({incomingRequests.length})</h4>
+                </div>
+                <div className="genz-requests-list">
+                  {incomingRequests.map((req) => (
+                    <div key={req._id} className="genz-request-item">
+                      <div className="genz-request-user">
+                        <div className="genz-req-avatar">
+                          {req.sender?.avatar && req.sender.avatar.startsWith("data:") ? (
+                            <img src={req.sender.avatar} alt={req.sender.name} />
+                          ) : (
+                            <div className="genz-avatar-placeholder-sm">👤</div>
+                          )}
+                        </div>
+                        <div>
+                          <strong>{req.sender?.name || "Explorer"}</strong>
+                          <p>Matching for {req.sender?.destination || "Trip"}</p>
+                        </div>
+                      </div>
+                      <div className="genz-request-actions">
+                        <button className="genz-btn genz-btn-emerald" onClick={() => handleAcceptConnection(req._id)}>
+                          Accept
+                        </button>
+                        <button className="genz-btn genz-btn-rose" onClick={() => handleDeclineConnection(req._id)}>
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
+            );
+          })()}
 
-            <div className="form-grid">
-              <div className="form-group">
-                <label className="form-label">📍 Dream Destination</label>
+          {/* TAB 1: MATCHES */}
+          {activeTab === "matches" && (
+            <div className="genz-card">
+              <div className="genz-card-header">
+                <div>
+                  <h3>Recommended Travel Buddies</h3>
+                  <p className="genz-card-subtitle">Matched based on your target location ({userData.destination}) and travel vibe.</p>
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="genz-loader-box">
+                  <div className="genz-spinner"></div>
+                  <p>Finding your travel matches...</p>
+                </div>
+              ) : travelers.length > 0 ? (
+                <div className="genz-matches-grid">
+                  {travelers.map((traveler) => (
+                    <div className="genz-match-card" key={traveler._id}>
+                      <div className="genz-match-top">
+                        <div className="genz-match-avatar">
+                          {traveler.avatar && traveler.avatar.startsWith("data:") ? (
+                            <img src={traveler.avatar} alt={traveler.name} />
+                          ) : (
+                            <div className="genz-avatar-placeholder-md">👤</div>
+                          )}
+                        </div>
+                        <div className="genz-match-meta">
+                          <h4>{traveler.name}</h4>
+                          <span className="genz-score-badge">⚡ {traveler.score}% Vibe Match</span>
+                        </div>
+                      </div>
+
+                      <div className="genz-match-tags">
+                        <span className="genz-pill pill-indigo">📍 {traveler.destination || "Anywhere"}</span>
+                        <span className="genz-pill pill-emerald">💰 {traveler.budget || "Medium"}</span>
+                        <span className="genz-pill pill-purple">🎒 {traveler.travelStyle || "Flexible"}</span>
+                      </div>
+
+                      <div className="genz-match-footer">
+                        {renderConnectButton(traveler)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="genz-empty-state">
+                  <span className="empty-icon">🌍</span>
+                  <h4>No matching travelers found yet.</h4>
+                  <p>Try adjusting your destination or travel vibe under 'Update Vibe Targets'.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: TRIP CHECKLIST */}
+          {activeTab === "itinerary" && (
+            <div className="genz-card">
+              <div className="genz-card-header">
+                <div>
+                  <h3>Trip Preparation Checklist</h3>
+                  <p className="genz-card-subtitle">Keep track of flights, stays, gear, and travel documents.</p>
+                </div>
+              </div>
+
+              {/* Progress gauge */}
+              <div className="genz-progress-box">
+                <div className="genz-progress-text">
+                  <span>Task Completion</span>
+                  <span><strong>{checklistCompletionPercent}%</strong> ({doneTasksCount} of {itinerary.length} items)</span>
+                </div>
+                <div className="genz-progress-track">
+                  <div className="genz-progress-bar" style={{ width: `${checklistCompletionPercent}%` }}></div>
+                </div>
+              </div>
+
+              {/* Add Task Form */}
+              <form onSubmit={addItineraryItem} className="genz-add-task-form">
                 <input
                   type="text"
-                  className="form-input"
-                  value={prefDest}
-                  onChange={(e) => setPrefDest(e.target.value)}
-                  placeholder="e.g. Goa, Bali, Paris"
+                  className="genz-input"
+                  placeholder="Add a task (e.g. Book flights, pack solar powerbank)..."
+                  value={newItineraryItem}
+                  onChange={(e) => setNewItineraryItem(e.target.value)}
                   required
                 />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">💰 Budget Size</label>
-                <select className="form-input" value={prefBudget} onChange={(e) => setPrefBudget(e.target.value)} required>
-                  <option value="">Select Budget</option>
-                  <option value="Low">Low Budget (Backpacking)</option>
-                  <option value="Medium">Medium Budget (Standard)</option>
-                  <option value="High">High Budget (Premium)</option>
+                <select
+                  className="genz-select"
+                  value={newItineraryCategory}
+                  onChange={(e) => setNewItineraryCategory(e.target.value)}
+                >
+                  <option value="general">🛂 General</option>
+                  <option value="flights">✈️ Flights</option>
+                  <option value="booking">🏨 Booking</option>
+                  <option value="packing">🎒 Packing</option>
                 </select>
-              </div>
+                <button type="submit" className="genz-btn genz-btn-primary">Add Task</button>
+              </form>
 
-              <div className="form-group">
-                <label className="form-label">🎒 Adventure Style</label>
-                <select className="form-input" value={prefStyle} onChange={(e) => setPrefStyle(e.target.value)} required>
-                  <option value="">Select Vibe</option>
-                  <option value="Adventure">Adventure & Hiking</option>
-                  <option value="Backpacking">Culture & Backpacking</option>
-                  <option value="Luxury">Luxury & Leisure</option>
-                  <option value="Family">Family Trips</option>
-                </select>
-              </div>
-            </div>
+              {/* Tasks List */}
+              <div className="genz-checklist">
+                {itinerary.map((item) => (
+                  <div key={item.id} className={`genz-task-item ${item.done ? "done" : ""}`}>
+                    <label className="genz-checkbox-wrapper">
+                      <input
+                        type="checkbox"
+                        checked={item.done}
+                        onChange={() => toggleItineraryItem(item.id)}
+                      />
+                      <span className="genz-checkmark"></span>
+                    </label>
 
-            <button type="submit" className="btn btn-secondary save-pref-btn">
-              Apply Preferences
-            </button>
-          </form>
-        )}
+                    <span className="genz-task-text">{item.text}</span>
 
-        {/* Tab 3: Trip Planner */}
-        {activeTab === "itinerary" && (
-          <div className="itinerary-builder glass-panel">
-            <h3>Interactive Trip Planner</h3>
-            <p className="tab-subtitle">Keep track of flight bookings, check-ins, and pack checklists.</p>
+                    <span className={`genz-category-tag cat-${item.category || "general"}`}>
+                      {item.category || "general"}
+                    </span>
 
-            {/* Visual Checklist Progress Bar */}
-            <div className="planner-progress-container">
-              <div className="planner-progress-header">
-                <span>Trip Preparation Progress</span>
-                <span>{checklistCompletionPercent}% Complete ({doneTasksCount} of {itinerary.length} items)</span>
-              </div>
-              <div className="planner-progress-bar-bg">
-                <div 
-                  className="planner-progress-fill" 
-                  style={{ width: `${checklistCompletionPercent}%` }} 
-                />
-              </div>
-            </div>
-
-            <form onSubmit={addItineraryItem} className="itinerary-form">
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Add checklist item (e.g. Apply for visa, pack solar bank)..."
-                value={newItineraryItem}
-                onChange={(e) => setNewItineraryItem(e.target.value)}
-                required
-              />
-              <select
-                className="form-input"
-                value={newItineraryCategory}
-                onChange={(e) => setNewItineraryCategory(e.target.value)}
-              >
-                <option value="general">General</option>
-                <option value="flights">Flights</option>
-                <option value="booking">Booking</option>
-                <option value="packing">Packing</option>
-              </select>
-              <button type="submit" className="btn btn-primary">Add Item</button>
-            </form>
-
-            <div className="itinerary-list">
-              {itinerary.length > 0 ? (
-                itinerary.map(item => (
-                  <div className={`itinerary-item ${item.done ? "done" : ""}`} key={item.id}>
-                    <input
-                      type="checkbox"
-                      checked={item.done}
-                      onChange={() => toggleItineraryItem(item.id)}
-                    />
-                    <span>{item.text}</span>
-                    
-                    {/* Category badge */}
-                    {item.category && (
-                      <span className={`category-pill ${item.category}`}>
-                        {item.category}
-                      </span>
-                    )}
-
-                    <button className="delete-item-btn" onClick={() => deleteItineraryItem(item.id)}>
+                    <button
+                      className="genz-task-delete"
+                      onClick={() => deleteItineraryItem(item.id)}
+                      title="Delete task"
+                    >
                       🗑
                     </button>
                   </div>
-                ))
-              ) : (
-                <p className="no-items-msg">No items in your checklist. Add one above to get started!</p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: PREFERENCES FORM */}
+          {activeTab === "preferences" && (
+            <div className="genz-card">
+              <div className="genz-card-header">
+                <div>
+                  <h3>Update Your Travel Targets</h3>
+                  <p className="genz-card-subtitle">Adjust your destination or budget to instantly refresh matching buddies.</p>
+                </div>
+              </div>
+
+              {alertMsg && (
+                <div className={`genz-alert-banner ${alertType}`}>
+                  <span>{alertMsg}</span>
+                </div>
               )}
+
+              <form onSubmit={handleSavePreferences} className="genz-pref-form">
+                <div className="genz-form-group">
+                  <label className="genz-label">📍 Target Destination</label>
+                  <input
+                    type="text"
+                    className="genz-input"
+                    value={prefDest}
+                    onChange={(e) => setPrefDest(e.target.value)}
+                    placeholder="e.g. Goa, Bali, Paris"
+                    required
+                  />
+                </div>
+
+                <div className="genz-form-group">
+                  <label className="genz-label">💰 Budget Range</label>
+                  <select
+                    className="genz-select"
+                    value={prefBudget}
+                    onChange={(e) => setPrefBudget(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Budget</option>
+                    <option value="Low">Low Budget (Backpacking)</option>
+                    <option value="Medium">Medium Budget (Standard)</option>
+                    <option value="High">High Budget (Premium)</option>
+                  </select>
+                </div>
+
+                <div className="genz-form-group">
+                  <label className="genz-label">🎒 Adventure Style</label>
+                  <select
+                    className="genz-select"
+                    value={prefStyle}
+                    onChange={(e) => setPrefStyle(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Vibe</option>
+                    <option value="Adventure">Adventure & Hiking</option>
+                    <option value="Backpacking">Culture & Backpacking</option>
+                    <option value="Luxury">Luxury & Leisure</option>
+                    <option value="Family">Family Trips</option>
+                  </select>
+                </div>
+
+                <button type="submit" className="genz-btn genz-btn-primary genz-btn-full">
+                  Save & Refresh Matches ✨
+                </button>
+              </form>
+            </div>
+          )}
+
+        </div>
+
+        {/* Right Sidebar: Quick Tools Widget */}
+        <div className="genz-bento-sidebar">
+          <div className="genz-card">
+            <div className="genz-card-header">
+              <h3>Quick Travel Tools 🛠️</h3>
+            </div>
+            <div className="genz-tools-grid">
+              {quickTools.map((tool, idx) => (
+                <div
+                  key={idx}
+                  className={`genz-tool-item tool-${tool.color}`}
+                  onClick={() => navigate(tool.path)}
+                >
+                  <span className="genz-tool-icon">{tool.icon}</span>
+                  <h4>{tool.title}</h4>
+                  <p>{tool.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
-        )}
+        </div>
 
       </div>
 
