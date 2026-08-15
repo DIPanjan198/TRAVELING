@@ -3,9 +3,9 @@ export const API_BASE = process.env.REACT_APP_API_URL
   || (window.location.hostname === "localhost" ? "http://localhost:5000" : "https://traveling-4.onrender.com");
 
 /**
- * Fetch wrapper with configurable timeout (default 12s) to handle Render backend spin-up delays gracefully
+ * Fetch wrapper with configurable timeout (default 25s) to handle Render/Railway backend spin-up delays gracefully
  */
-export async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+export async function fetchWithTimeout(url, options = {}, timeoutMs = 25000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
