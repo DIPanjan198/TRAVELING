@@ -21,23 +21,16 @@ function Sidebar({ isOpen, setSidebarOpen }) {
   });
 
   useEffect(() => {
-    if (!socket) {
-      console.log("Sidebar: Socket not initialized yet");
-      return;
-    }
-    console.log("Sidebar: Socket initialized, binding newMessageNotification listener");
+    if (!socket) return;
+
     const handleNotification = (data) => {
-      console.log("Sidebar: Received newMessageNotification:", data);
       const match = location.pathname.match(/\/chat\/([^/]+)/);
       const activeBuddyId = match ? match[1] : null;
-      console.log("Sidebar: Current activeBuddyId =", activeBuddyId, "Notification senderId =", data.senderId);
       
       if (activeBuddyId !== data.senderId) {
         setUnreadSenders(prev => {
-          console.log("Sidebar: Current unreadSenders:", prev);
           if (prev.includes(data.senderId)) return prev;
           const next = [...prev, data.senderId];
-          console.log("Sidebar: Updating unreadSenders to:", next);
           localStorage.setItem("unreadSenders", JSON.stringify(next));
           return next;
         });
@@ -46,7 +39,6 @@ function Sidebar({ isOpen, setSidebarOpen }) {
 
     socket.on("newMessageNotification", handleNotification);
     return () => {
-      console.log("Sidebar: Unbinding newMessageNotification listener");
       socket.off("newMessageNotification", handleNotification);
     };
   }, [socket, location.pathname]);

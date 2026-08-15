@@ -109,8 +109,8 @@ function Register() {
       _id: "demo_" + Math.random().toString(36).substr(2, 9),
       name: fullName,
       email: email || "dipanjan2026@gmail.com",
-      destination: destination || "Goa",
-      budget: budget || "Medium",
+      destination: destination || "Manali",
+      budget: budget || "Low Budget",
       travelStyle: travelStyle || "Adventure",
       avatar: ""
     };
@@ -154,7 +154,7 @@ function Register() {
           travelStyle,
           avatar: "",
         }),
-      }, 10000);
+      }, 40000);
 
       const data = await res.json();
       if (res.ok) {
@@ -166,13 +166,16 @@ function Register() {
         setError(data.message || "A user with that email already exists.");
       }
     } catch (err) {
-      console.error(err);
+      console.warn("Register fetch issue:", err.message);
       setIsConnectionError(true);
-      setError("Server connection failed or waking up. Retry or proceed in demo mode.");
+      setError(err.isTimeout 
+        ? "Server is waking up (Render free tier). Please retry or proceed in demo mode." 
+        : "Server connection failed or waking up. Retry or proceed in demo mode.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="auth-wrapper">
@@ -417,7 +420,7 @@ function Register() {
                 </div>
 
                 {error && (
-                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -425,13 +428,24 @@ function Register() {
                       <span>{error}</span>
                     </div>
                     {isConnectionError && (
-                      <button 
-                        type="button" 
-                        className="demo-fallback-btn" 
-                        onClick={handleDemoRegister}
-                      >
-                        ⚡ Continue as Demo User
-                      </button>
+                      <div style={{ display: "flex", gap: "8px", width: "100%", marginTop: "4px" }}>
+                        <button 
+                          type="button" 
+                          className="google-btn-secondary" 
+                          style={{ border: "1px solid var(--google-blue)", padding: "6px 14px", fontSize: "0.82rem" }}
+                          onClick={handleRegister}
+                          disabled={loading}
+                        >
+                          🔄 Retry Connection
+                        </button>
+                        <button 
+                          type="button" 
+                          className="demo-fallback-btn" 
+                          onClick={handleDemoRegister}
+                        >
+                          ⚡ Demo Mode
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
@@ -451,7 +465,7 @@ function Register() {
                     onClick={handleRegister}
                     disabled={loading || success !== null}
                   >
-                    {loading ? "Creating..." : "Submit"}
+                    {loading ? "Connecting..." : "Submit"}
                   </button>
                 </div>
               </div>

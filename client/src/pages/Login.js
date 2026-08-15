@@ -59,7 +59,7 @@ function Login() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setError(null);
     setIsConnectionError(false);
 
@@ -74,7 +74,7 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      }, 10000);
+      }, 40000);
 
       const data = await res.json();
       if (!res.ok) {
@@ -87,9 +87,11 @@ function Login() {
       localStorage.setItem("isLoggedIn", "true");
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
+      console.warn("Login fetch issue:", err.message);
       setIsConnectionError(true);
-      setError("Backend server is offline or waking up. Retry or continue in demo mode.");
+      setError(err.isTimeout 
+        ? "Backend server is waking up (Render free tier). Please retry or continue in demo mode." 
+        : "Backend server is offline or waking up. Retry or continue in demo mode.");
     } finally {
       setLoading(false);
     }
@@ -208,7 +210,7 @@ function Login() {
                 </div>
 
                 {error && (
-                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                  <div className="google-error-message" style={{ flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <svg className="google-error-icon" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -216,13 +218,24 @@ function Login() {
                       <span>{error}</span>
                     </div>
                     {isConnectionError && (
-                      <button 
-                        type="button" 
-                        className="demo-fallback-btn" 
-                        onClick={handleDemoLogin}
-                      >
-                        ⚡ Continue as Demo User
-                      </button>
+                      <div style={{ display: "flex", gap: "8px", width: "100%", marginTop: "4px" }}>
+                        <button 
+                          type="button" 
+                          className="google-btn-secondary" 
+                          style={{ border: "1px solid var(--google-blue)", padding: "6px 14px", fontSize: "0.82rem" }}
+                          onClick={handleLogin}
+                          disabled={loading}
+                        >
+                          🔄 Retry Connection
+                        </button>
+                        <button 
+                          type="button" 
+                          className="demo-fallback-btn" 
+                          onClick={handleDemoLogin}
+                        >
+                          ⚡ Demo Mode
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
@@ -236,7 +249,7 @@ function Login() {
                     className="google-btn-primary" 
                     disabled={loading}
                   >
-                    {loading ? "Signing in..." : "Next"}
+                    {loading ? "Connecting..." : "Next"}
                   </button>
                 </div>
               </form>
