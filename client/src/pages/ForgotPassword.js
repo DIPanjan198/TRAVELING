@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import TiltCard from "../components/TiltCard";
-import AestheticConsole from "../components/AestheticConsole";
 import "./Auth.css";
 
 function ForgotPassword() {
@@ -92,8 +91,6 @@ function ForgotPassword() {
           </form>
         </div>
       </TiltCard>
-
-      <AestheticConsole />
     </div>
   );
 }

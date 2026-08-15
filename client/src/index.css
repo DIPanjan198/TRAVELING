@@ -603,6 +603,19 @@ select option:checked {
 
 /* Tablet & Mobile: ≤900px */
 @media (max-width: 900px) {
+  .app-header {
+    background: var(--surface, rgba(17, 24, 39, 0.92)) !important;
+    backdrop-filter: blur(20px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+    padding: 0 16px;
+  }
+
+  .logo-toggle-btn .logo-text {
+    font-size: 1.05rem;
+  }
+
   .main-content {
     margin-left: 0 !important;
     padding-top: 64px; /* persistent header height */

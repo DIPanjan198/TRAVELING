@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import MobileBottomNav from "./components/MobileBottomNav";
+import AestheticConsole from "./components/AestheticConsole";
 import ExploreDestinations from "./pages/ExploreDestinations";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -321,6 +322,8 @@ function App() {
 
           {/* Mobile Bottom Navigation Bar */}
           <MobileBottomNav sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          {/* Global Aesthetics Console */}
+          <AestheticConsole />
         </div>
       </SocketProvider>
     </BrowserRouter>

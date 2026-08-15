@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { API_BASE, fetchWithTimeout, createDemoUser } from "../utils/api";
 import TiltCard from "../components/TiltCard";
-import AestheticConsole from "../components/AestheticConsole";
 import "./Auth.css";
 
 function Login() {
@@ -262,8 +261,6 @@ function Login() {
           <Link to="/terms">Terms</Link>
         </div>
       </div>
-
-      <AestheticConsole />
     </div>
   );
 }

@@ -17,13 +17,14 @@
 
 /* ── Hero Profile Card ── */
 .genz-hero-card {
-  background: linear-gradient(135deg, #131c31 0%, #1e293b 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(19, 28, 49, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 20px;
   padding: 28px 32px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(16px);
 }
 
 .genz-hero-header {
@@ -155,19 +156,21 @@
 }
 
 .genz-stat-card {
-  background: #131c31;
-  border: 1px solid #1e293b;
+  background: rgba(19, 28, 49, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   padding: 18px 20px;
   display: flex;
   align-items: center;
   gap: 14px;
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .genz-stat-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.2);
 }
 
 .genz-stat-icon {
@@ -224,48 +227,68 @@
 .genz-tabs-bar {
   display: flex;
   gap: 8px;
-  background: #131c31;
-  border: 1px solid #1e293b;
-  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
   padding: 6px;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.genz-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-label-full {
+  display: inline;
+}
+
+.tab-label-mobile {
+  display: none;
 }
 
 .genz-tab-btn {
   flex: 1;
-  background: transparent;
-  border: none;
-  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
   font-family: inherit;
   font-weight: 700;
   font-size: 0.88rem;
   padding: 10px 16px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   white-space: nowrap;
 }
 
 .genz-tab-btn:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .genz-tab-btn.active {
-  background: #6366f1;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
 }
 
 /* ── Gen-Z Cards ── */
 .genz-card {
-  background: #131c31;
-  border: 1px solid #1e293b;
+  background: rgba(19, 28, 49, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
 }
 
 .genz-card-header h3 {
@@ -691,8 +714,8 @@
 }
 
 .genz-tool-item {
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   padding: 16px 12px;
   display: flex;
@@ -701,31 +724,33 @@
   text-align: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .genz-tool-item:hover {
   transform: translateY(-3px);
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.08);
+  border-color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
 }
 
 .genz-tool-icon {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 
 .genz-tool-item h4 {
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 800;
   color: #ffffff;
   margin: 0;
 }
 
 .genz-tool-item p {
-  font-size: 0.72rem;
-  color: #9ca3af;
+  font-size: 0.74rem;
+  color: #cbd5e1;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 /* Loader Box */
@@ -760,37 +785,205 @@
 
 @media (max-width: 768px) {
   .genz-dashboard-container {
-    padding: 75px 16px 60px;
+    padding: 76px 14px calc(100px + env(safe-area-inset-bottom, 0px));
+    gap: 16px;
   }
+
   .genz-hero-card {
     padding: 20px 16px;
+    border-radius: 16px;
   }
-  .genz-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+
   .genz-hero-header {
     flex-direction: column;
     text-align: center;
+    gap: 16px;
   }
+
+  .genz-hero-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .genz-hero-title-row {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .genz-hero-title-row h2 {
+    font-size: 1.5rem;
+    word-break: break-word;
+  }
+
+  .genz-tags-row {
+    justify-content: center;
+  }
+
   .genz-hero-actions {
     margin-left: 0;
     width: 100%;
     display: flex;
     justify-content: center;
   }
-  .genz-hero-title-row {
-    justify-content: center;
+
+  .genz-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
-  .genz-tags-row {
+
+  .genz-stat-card {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .genz-stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+  }
+
+  .genz-stat-label {
+    font-size: 0.68rem;
+  }
+
+  .genz-stat-val {
+    font-size: 1.15rem;
+  }
+
+  .tab-label-full {
+    display: none;
+  }
+
+  .tab-label-mobile {
+    display: inline;
+  }
+
+  .genz-tabs-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .genz-tab-btn {
+    flex: 1 1 0%;
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 9px 4px;
+    text-align: center;
     justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .genz-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+
+  .genz-tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .genz-tool-item {
+    padding: 14px 8px;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .genz-tool-item h4 {
+    font-size: 0.82rem;
+    word-break: break-word;
+  }
+
+  .genz-match-footer .genz-btn {
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 550px) {
+  .genz-dashboard-container {
+    padding: 70px 12px calc(95px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .genz-hero-title-row h2 {
+    font-size: 1.35rem;
+  }
+
+  .genz-request-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 12px;
+  }
+
+  .genz-request-user {
+    width: 100%;
+  }
+
+  .genz-request-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .genz-request-actions .genz-btn {
+    width: 100%;
+  }
+
+  .genz-matches-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .genz-add-task-form {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .genz-add-task-form .genz-input,
+  .genz-add-task-form .genz-select,
+  .genz-add-task-form .genz-btn {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .genz-task-item {
+    padding: 10px 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .genz-task-text {
+    font-size: 0.86rem;
+    word-break: break-word;
+  }
+
+  .genz-category-tag {
+    font-size: 0.68rem;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 380px) {
   .genz-stats-grid {
     grid-template-columns: 1fr;
   }
+
   .genz-tools-grid {
     grid-template-columns: 1fr;
+  }
+
+  .genz-hero-card {
+    padding: 16px 12px;
   }
 }

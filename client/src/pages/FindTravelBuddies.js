@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import TiltCard from "../components/TiltCard";
 import ScrollReveal from "../components/ScrollReveal";
-import AestheticConsole from "../components/AestheticConsole";
 import "./FindTravelBuddies.css";
 
 function FindTravelBuddies() {
@@ -84,8 +83,6 @@ function FindTravelBuddies() {
           </div>
         </TiltCard>
       </ScrollReveal>
-
-      <AestheticConsole />
     </div>
   );
 }

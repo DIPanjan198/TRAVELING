@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TiltCard from "../components/TiltCard";
 import ScrollReveal from "../components/ScrollReveal";
-import AestheticConsole from "../components/AestheticConsole";
 import "./ExploreDestinations.css";
 
 function ExploreDestinations() {
@@ -146,8 +145,6 @@ function ExploreDestinations() {
           </div>
         )}
       </ScrollReveal>
-
-      <AestheticConsole />
     </div>
   );
 }

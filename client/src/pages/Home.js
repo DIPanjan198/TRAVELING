@@ -4,7 +4,6 @@ import { API_BASE } from "../utils/api";
 import Footer from "../components/Footer";
 import TiltCard from "../components/TiltCard";
 import ScrollReveal from "../components/ScrollReveal";
-import AestheticConsole from "../components/AestheticConsole";
 import hero1Img from "../assets/hero-1.png";
 import hero2Img from "../assets/hero-2.png";
 import "./Home.css";
@@ -401,9 +400,6 @@ function Home() {
           <span className="scroll-arrow">↑</span>
         </button>
       )}
-
-      {/* Floating Theme Customizer Console */}
-      <AestheticConsole />
     </div>
   );
 }

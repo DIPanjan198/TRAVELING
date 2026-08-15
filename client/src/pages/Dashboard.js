@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../utils/api";
 import TiltCard from "../components/TiltCard";
 import ScrollReveal from "../components/ScrollReveal";
-import AestheticConsole from "../components/AestheticConsole";
 import "./Dashboard.css";
 
 function Dashboard() {
@@ -456,19 +455,22 @@ function Dashboard() {
               className={`genz-tab-btn ${activeTab === "matches" ? "active" : ""}`}
               onClick={() => setActiveTab("matches")}
             >
-              🔥 Top Vibe Matches ({travelers.length})
+              <span className="tab-label-full">🔥 Top Vibe Matches ({travelers.length})</span>
+              <span className="tab-label-mobile">🔥 Matches ({travelers.length})</span>
             </button>
             <button
               className={`genz-tab-btn ${activeTab === "itinerary" ? "active" : ""}`}
               onClick={() => setActiveTab("itinerary")}
             >
-              ✨ Trip Hype Checklist ({doneTasksCount}/{itinerary.length})
+              <span className="tab-label-full">✨ Trip Hype Checklist ({doneTasksCount}/{itinerary.length})</span>
+              <span className="tab-label-mobile">✨ Checklist ({doneTasksCount}/{itinerary.length})</span>
             </button>
             <button
               className={`genz-tab-btn ${activeTab === "preferences" ? "active" : ""}`}
               onClick={() => setActiveTab("preferences")}
             >
-              🎯 Update Vibe Targets
+              <span className="tab-label-full">🎯 Update Vibe Targets</span>
+              <span className="tab-label-mobile">🎯 Vibe Targets</span>
             </button>
           </div>
 
@@ -735,8 +737,6 @@ function Dashboard() {
         </div>
 
       </div>
-
-      <AestheticConsole />
     </div>
   );
 }

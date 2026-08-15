@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./AestheticConsole.css";
 
 function AestheticConsole() {
   const [isOpen, setIsOpen] = useState(false);
+  const consoleRef = useRef(null);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("aero-theme") || "indigo";
   });
@@ -25,8 +26,24 @@ function AestheticConsole() {
     localStorage.setItem("aero-grid-enabled", String(gridEnabled));
   }, [gridEnabled]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (consoleRef.current && !consoleRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <div className="aesthetic-console-wrapper">
+    <div className="aesthetic-console-wrapper" ref={consoleRef}>
       <button
         className="console-trigger-btn"
         onClick={() => setIsOpen(!isOpen)}

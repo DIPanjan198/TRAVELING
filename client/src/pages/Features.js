@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import TiltCard from "../components/TiltCard";
 import ScrollReveal from "../components/ScrollReveal";
-import AestheticConsole from "../components/AestheticConsole";
 import "./Features.css";
 
 const featureCards = [
@@ -226,8 +225,6 @@ function Features() {
           </div>
         </div>
       </ScrollReveal>
-
-      <AestheticConsole />
     </div>
   );
 }
