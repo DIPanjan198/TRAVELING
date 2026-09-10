@@ -474,22 +474,7 @@ function Register() {
         </div>
       </TiltCard>
 
-      {/* Google page footer */}
-      <div className="google-footer">
-        <div className="google-footer-left">
-          <select defaultValue="en">
-            <option value="en">English (United States)</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
-            <option value="de">Deutsch</option>
-          </select>
-        </div>
-        <div className="google-footer-right">
-          <Link to="/help">Help</Link>
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
-        </div>
-      </div>
+
     </div>
   );
 }
