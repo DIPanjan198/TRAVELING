@@ -359,7 +359,10 @@
 @media (max-width: 900px) {
   .sidebar-container {
     padding-top: 24px;
+    /* Stop sidebar above the fixed mobile bottom nav so Sign In is always visible */
+    bottom: 70px;
     z-index: 300;
+    border-bottom-right-radius: var(--radius-md);
   }
 }
 
