@@ -20,8 +20,7 @@
   box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.32s ease;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* ── Brand logo area ── */
@@ -92,6 +91,15 @@
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Hide scrollbar but keep it functional */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-nav .section-title {
