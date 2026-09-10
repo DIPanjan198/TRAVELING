@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { API_BASE, fetchWithTimeout } from "../utils/api";
 import TiltCard from "../components/TiltCard";
 import "./Auth.css";

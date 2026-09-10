@@ -257,6 +257,7 @@
   background: var(--bg-dark-glass);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  z-index: 10;
 }
 
 .login-nav-btn { width: 100%; }
@@ -364,17 +365,27 @@
 
 /* ── Mobile adjustments ── */
 @media (max-width: 900px) {
+  .sidebar-backdrop {
+    z-index: 940;
+  }
+
   .sidebar-container {
     padding-top: 24px;
     /* Sidebar stops above the mobile bottom nav (~70px tall) */
     bottom: 70px;
-    z-index: 300;
+    z-index: 950;
     border-bottom-right-radius: 16px;
   }
 
-  /* Less padding needed since sidebar is already clipped above bottom nav */
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Padding needed so scrolling nav items don't hide behind pinned footer */
   .sidebar-nav {
-    padding-bottom: 80px;
+    padding-bottom: 90px;
   }
 }
 
