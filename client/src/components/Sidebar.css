@@ -15,7 +15,7 @@
   border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
-  padding: 32px 20px;
+  padding: 32px 20px 0 20px;
   z-index: 300;
   box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
@@ -93,7 +93,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* Hide scrollbar but keep it functional */
+  /* padding-bottom leaves room for the pinned footer */
+  padding-bottom: 90px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -247,9 +248,15 @@
 
 /* ── Footer ── */
 .sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 20px;
   border-top: 1px solid var(--border-light);
-  padding-top: 16px;
-  flex-shrink: 0;
+  background: var(--bg-dark-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .login-nav-btn { width: 100%; }
@@ -359,10 +366,15 @@
 @media (max-width: 900px) {
   .sidebar-container {
     padding-top: 24px;
-    /* Stop sidebar above the fixed mobile bottom nav so Sign In is always visible */
+    /* Sidebar stops above the mobile bottom nav (~70px tall) */
     bottom: 70px;
     z-index: 300;
-    border-bottom-right-radius: var(--radius-md);
+    border-bottom-right-radius: 16px;
+  }
+
+  /* Less padding needed since sidebar is already clipped above bottom nav */
+  .sidebar-nav {
+    padding-bottom: 80px;
   }
 }
 
