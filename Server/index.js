@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,20 +25,96 @@ app.use(
 );
 app.use(express.json());
 
+// Disable silent command buffering so requests don't hang for 10s if database is offline
+mongoose.set("bufferCommands", false);
+
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbuddy";
 
-console.log("Attempting MongoDB Connection to:", MONGO_URI.replace(/:([^@]+)@/, ":****@"));
+let isConnecting = false;
+let reconnectTimer = null;
 
-mongoose
-  .connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 10000,
-  })
-  .then(() => console.log(`MongoDB Connected successfully!`))
-  .catch((err) => {
-    console.error("MongoDB Connection Error:");
-    console.error("If using MongoDB Atlas, verify IP Whitelist (0.0.0.0/0) and credentials.");
-    console.error(err.message);
+const connectDB = async () => {
+  if (mongoose.connection.readyState === 1 || isConnecting) return;
+  isConnecting = true;
+  try {
+    const maskedUri = MONGO_URI.replace(/:([^@]+)@/, ":****@");
+    console.log(`[Database] Connecting to MongoDB: ${maskedUri}`);
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+    });
+    console.log(`[Database] MongoDB Connected successfully!`);
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+  } catch (err) {
+    console.error("[Database] Connection Error:", err.message);
+    console.error("[Database] Ensure MONGO_URI is defined on Render and MongoDB Atlas Network Access permits 0.0.0.0/0.");
+    if (!reconnectTimer) {
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        connectDB();
+      }, 8000);
+    }
+  } finally {
+    isConnecting = false;
+  }
+};
+
+// Initial connection attempt
+connectDB();
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("[Database] MongoDB disconnected. Scheduling reconnect in 8s...");
+  if (!reconnectTimer) {
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      connectDB();
+    }, 8000);
+  }
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("[Database] Mongoose connection event error:", err.message);
+});
+
+// Diagnostic endpoint to check backend & database status
+app.get("/api/health", (req, res) => {
+  const stateMap = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting"
+  };
+  const state = mongoose.connection.readyState;
+  res.status(state === 1 ? 200 : 503).json({
+    status: state === 1 ? "healthy" : "database_unavailable",
+    database: stateMap[state] || "unknown",
+    readyState: state,
+    mongoUriConfigured: Boolean(process.env.MONGO_URI),
+    timestamp: new Date().toISOString()
   });
+});
+
+// Guard middleware for /api routes requiring MongoDB
+const ensureDbConnected = (req, res, next) => {
+  if (req.path === "/health") {
+    return next();
+  }
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+  // Trigger background reconnect attempt
+  connectDB();
+  return res.status(503).json({
+    success: false,
+    isDbError: true,
+    message: "Database service is temporarily unavailable. Please verify MongoDB Atlas IP Whitelist (0.0.0.0/0) and MONGO_URI configuration."
+  });
+};
+
+app.use("/api", ensureDbConnected);
 
 const UserSchema = new mongoose.Schema({
 
@@ -141,10 +218,14 @@ app.post("/api/register", async (req, res) => {
       user,
     });
   } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
-      message: err.message,
+    console.error("Register error:", err.message);
+    const isDbError = err.name === "MongooseError" || err.message?.includes("buffering") || err.message?.includes("connection");
+    res.status(isDbError ? 503 : 500).json({
+      success: false,
+      isDbError,
+      message: isDbError
+        ? "Database connection timed out or is unavailable. Please verify MongoDB Atlas IP Whitelist (0.0.0.0/0)."
+        : err.message,
     });
   }
 });
@@ -176,21 +257,27 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-      res.json({
-  success: true,
-  user: {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    destination: user.destination,
-    budget: user.budget,
-    travelStyle: user.travelStyle,
-    avatar: user.avatar
-  }
-});
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        destination: user.destination,
+        budget: user.budget,
+        travelStyle: user.travelStyle,
+        avatar: user.avatar
+      }
+    });
   } catch (err) {
-    res.status(500).json({
-      message: err.message,
+    console.error("Login error:", err.message);
+    const isDbError = err.name === "MongooseError" || err.message?.includes("buffering") || err.message?.includes("connection");
+    res.status(isDbError ? 503 : 500).json({
+      success: false,
+      isDbError,
+      message: isDbError
+        ? "Database connection timed out or is unavailable. Please verify MongoDB Atlas IP Whitelist (0.0.0.0/0)."
+        : err.message,
     });
   }
 });

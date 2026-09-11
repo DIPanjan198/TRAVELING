@@ -156,14 +156,28 @@ function Register() {
         }),
       }, 40000);
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setSuccess("Account created successfully! Forwarding you to sign in... ✅");
         setTimeout(() => {
           navigate("/login");
         }, 2200);
       } else {
-        setError(data.message || "A user with that email already exists.");
+        const isDbError = data.isDbError || 
+          res.status === 503 || 
+          res.status === 500 || 
+          (data.message && (
+            data.message.toLowerCase().includes("buffering") ||
+            data.message.toLowerCase().includes("database") ||
+            data.message.toLowerCase().includes("mongo")
+          ));
+
+        if (isDbError) {
+          setIsConnectionError(true);
+          setError("Database is temporarily unreachable or configuring. You can retry or continue immediately in Demo Mode.");
+        } else {
+          setError(data.message || "A user with that email already exists.");
+        }
       }
     } catch (err) {
       console.warn("Register fetch issue:", err.message);

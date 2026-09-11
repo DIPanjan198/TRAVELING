@@ -76,9 +76,23 @@ function Login() {
         body: JSON.stringify({ email, password }),
       }, 40000);
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.message || "Wrong password. Try again or click Forgot password to reset it.");
+        const isDbError = data.isDbError || 
+          res.status === 503 || 
+          res.status === 500 || 
+          (data.message && (
+            data.message.toLowerCase().includes("buffering") ||
+            data.message.toLowerCase().includes("database") ||
+            data.message.toLowerCase().includes("mongo")
+          ));
+
+        if (isDbError) {
+          setIsConnectionError(true);
+          setError("Database is temporarily unreachable or configuring. You can retry or continue in Demo Mode.");
+        } else {
+          setError(data.message || "Wrong password. Try again or click Forgot password to reset it.");
+        }
         setLoading(false);
         return;
       }
