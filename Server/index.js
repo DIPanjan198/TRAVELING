@@ -28,7 +28,8 @@ app.use(express.json());
 // Disable silent command buffering so requests don't hang for 10s if database is offline
 mongoose.set("bufferCommands", false);
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbuddy";
+const rawMongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbuddy";
+const MONGO_URI = rawMongoUri.trim();
 
 let isConnecting = false;
 let reconnectTimer = null;
