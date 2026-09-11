@@ -115,3 +115,21 @@
     max-width: none;
   }
 }
+
+/* ── Header logo image ───────────────────── */
+.header-logo-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.logo-toggle-btn:hover .header-logo-img {
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
+  transform: scale(1.06);
+}
+

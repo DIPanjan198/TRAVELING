@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext } from "react";
+import SplashScreen from "./components/SplashScreen";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -155,6 +156,7 @@ function SocketProvider({ children }) {
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Set default sidebar state on load
   useEffect(() => {
@@ -191,6 +193,8 @@ function App() {
   }, []);
 
   return (
+    <>
+    {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
     <BrowserRouter>
       <SocketProvider>
         <div className={`app-layout ${sidebarOpen ? "sidebar-visible" : "sidebar-hidden"}`}>
@@ -202,18 +206,7 @@ function App() {
               title={sidebarOpen ? "Hide Menu" : "Show Menu"}
             >
               <div className="logo-icon">
-                {sidebarOpen ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <line x1="3" y1="18" x2="21" y2="18"/>
-                  </svg>
-                )}
+                <img src="/logo.jpg" alt="AeroTravel" className="header-logo-img" />
               </div>
               <span className="logo-text">AeroTravel<span className="logo-dot">.</span></span>
             </button>
@@ -327,6 +320,7 @@ function App() {
         </div>
       </SocketProvider>
     </BrowserRouter>
+    </>
   );
 }
 
