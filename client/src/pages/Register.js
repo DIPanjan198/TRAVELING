@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { API_BASE, fetchWithTimeout } from "../utils/api";
 import TiltCard from "../components/TiltCard";
 import "./Auth.css";
@@ -196,18 +196,10 @@ function Register() {
       <div className="bg-blob blob-primary" />
       <div className="bg-blob blob-secondary" />
 
-      {/* Back to Home Navigation Button */}
-      <Link to="/" className="auth-back-home" title="Back to AeroTravel Home">
-        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-          <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-        </svg>
-        <span>Back to Home</span>
-      </Link>
-
       <TiltCard maxTilt={5}>
         <div className="auth-card register-card">
-          {/* Playful Google logo style — clickable to Home */}
-          <Link to="/" className="auth-brand google-text" style={{ textDecoration: "none" }} title="AeroTravel Home">
+          {/* Playful Google logo style */}
+          <div className="auth-brand google-text">
             <span>A</span>
             <span>e</span>
             <span>r</span>
@@ -218,7 +210,7 @@ function Register() {
             <span>v</span>
             <span>e</span>
             <span>l</span>
-          </Link>
+          </div>
 
           <h1>Create your AeroTravel Account</h1>
           <p className="auth-subtitle">to connect with adventure buddies worldwide</p>
@@ -493,16 +485,6 @@ function Register() {
               </div>
             )}
           </form>
-
-          {/* Bottom Back to Home Link */}
-          <div className="auth-card-footer-home">
-            <Link to="/" className="auth-home-sublink">
-              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
-              <span>Back to Home</span>
-            </Link>
-          </div>
         </div>
       </TiltCard>
 
