@@ -32,6 +32,7 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/travelbudd
 
 let isConnecting = false;
 let reconnectTimer = null;
+let lastDbError = null;
 
 const connectDB = async () => {
   if (mongoose.connection.readyState === 1 || isConnecting) return;
@@ -40,15 +41,17 @@ const connectDB = async () => {
     const maskedUri = MONGO_URI.replace(/:([^@]+)@/, ":****@");
     console.log(`[Database] Connecting to MongoDB: ${maskedUri}`);
     await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 6000,
+      connectTimeoutMS: 6000,
     });
+    lastDbError = null;
     console.log(`[Database] MongoDB Connected successfully!`);
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;
     }
   } catch (err) {
+    lastDbError = err.message;
     console.error("[Database] Connection Error:", err.message);
     console.error("[Database] Ensure MONGO_URI is defined on Render and MongoDB Atlas Network Access permits 0.0.0.0/0.");
     if (!reconnectTimer) {
@@ -76,6 +79,7 @@ mongoose.connection.on("disconnected", () => {
 });
 
 mongoose.connection.on("error", (err) => {
+  lastDbError = err.message;
   console.error("[Database] Mongoose connection event error:", err.message);
 });
 
@@ -88,11 +92,19 @@ app.get("/api/health", (req, res) => {
     3: "disconnecting"
   };
   const state = mongoose.connection.readyState;
+  if (state !== 1) {
+    connectDB();
+  }
+  const maskedUri = MONGO_URI.replace(/:([^@]+)@/, ":****@");
+  const targetHost = maskedUri.includes("@") ? maskedUri.split("@")[1] : maskedUri;
+  
   res.status(state === 1 ? 200 : 503).json({
     status: state === 1 ? "healthy" : "database_unavailable",
     database: stateMap[state] || "unknown",
     readyState: state,
     mongoUriConfigured: Boolean(process.env.MONGO_URI),
+    connectedTarget: targetHost,
+    errorReason: lastDbError || (state === 1 ? null : "Connecting or verifying credentials..."),
     timestamp: new Date().toISOString()
   });
 });
